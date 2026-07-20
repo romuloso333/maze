@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>Maze Codex . Probe v0.7</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Maze Codex . Probe v0.8</title>
 <style>
   :root{
     --gold:#C9A46A;
@@ -48,6 +51,7 @@
   }
   body.tint-odyssey  {--bg-a:#0A0C22;--bg-b:#121740;--bg-c:#1A2050}
   body.tint-abilities{--bg-a:#0E0924;--bg-b:#1A1042;--bg-c:#241852}
+  body.tint-database {--bg-a:#130E07;--bg-b:#211810;--bg-c:#2D2115}
   body.tint-score    {--bg-a:#06141A;--bg-b:#0C222B;--bg-c:#122E38}
   body.tint-crew     {--bg-a:#150E07;--bg-b:#20150B;--bg-c:#2A1D10}
   body.tint-cohort   {--bg-a:#04100A;--bg-b:#0A1F12;--bg-c:#102B1A}
@@ -277,6 +281,64 @@
     color:var(--parch-dim);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;line-height:1.9;
   }
 
+  /* ---------- abilities: header plates ---------- */
+  .aplates{display:grid;gap:var(--s3);margin-top:var(--s4)}
+  @media (min-width:760px){ .aplates{grid-template-columns:1fr 1fr 1.25fr} }
+  .aplate{
+    border:1px solid var(--gold-40);background:var(--card);
+    padding:var(--s3) var(--s4);text-align:center;min-width:0;
+  }
+  .ap-label{color:var(--gold);font-size:9.5px;letter-spacing:3px;text-transform:uppercase}
+  .ap-num{color:var(--gold-bright);font-size:30px;line-height:1.2;margin-top:2px}
+  .ap-line{margin-top:4px;color:var(--parch-dim);font-size:8.5px;letter-spacing:1.8px;text-transform:uppercase;line-height:1.8}
+  .ap-sub{margin-top:3px;color:var(--muted);font-size:10.5px;font-style:italic}
+  .fragrow{display:flex;gap:9px;justify-content:center;align-items:center;margin-top:8px;height:12px}
+  .fragrow i{
+    display:inline-block;width:9px;height:9px;flex:none;
+    transform:rotate(45deg);border:1px dashed var(--gold-40);background:transparent;
+  }
+  .fragrow small{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------- abilities: tier rows ---------- */
+  .tierlabel{position:relative;text-align:center;margin:4px 0 12px;z-index:1}
+  .tierlabel span{
+    display:inline-block;background:rgba(10,10,22,.92);
+    border:1px solid var(--gold-25);padding:2px 12px;
+    color:var(--gold);font-size:8.5px;letter-spacing:2.5px;text-transform:uppercase;
+  }
+  .tierlabel small{
+    display:block;margin-top:2px;
+    color:var(--muted);font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  }
+  .tiergroup.tlocked .tierlabel span{border-style:dashed;color:var(--muted)}
+  .tiergroup.tlocked .bcard{opacity:.42}
+  .tiergroup.tlocked .bcard .ranks{opacity:.8}
+
+  /* ---------- abilities: rank pips ---------- */
+  .ranks{display:flex;gap:12px;align-items:flex-start;margin-top:7px}
+  .rk{display:inline-flex;flex-direction:column;align-items:center;gap:3px;min-height:22px}
+  .rk i{
+    display:block;width:8px;height:8px;margin:2px;
+    transform:rotate(45deg);
+    border:1px solid var(--acc-dim,var(--gold-40));background:transparent;
+  }
+  .rk.f i{background:var(--acc,var(--gold));border-color:var(--acc,var(--gold))}
+  .rk.h i{
+    background:linear-gradient(135deg,var(--acc,var(--gold)) 50%,transparent 50%);
+    border-color:var(--acc,var(--gold));
+  }
+  .rk b{font-weight:normal;font-size:7px;letter-spacing:1px;color:var(--muted)}
+  .rk .sglyph{position:relative;width:7px;height:8px;display:block}
+  .rk .sglyph::before{
+    content:"";position:absolute;left:3px;top:2px;bottom:0;width:1px;
+    background:rgba(224,192,132,.55);
+  }
+  .rk .sglyph::after{
+    content:"";position:absolute;left:1.5px;top:0;width:4px;height:4px;
+    transform:rotate(45deg);border:1px solid rgba(224,192,132,.6);
+  }
+  .ranks-note{margin-top:var(--s4);text-align:center;color:var(--muted);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;line-height:2}
+
   /* ---------- abilities: forest ---------- */
   .chips{display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:center;margin:var(--s6) 0 var(--s5)}
   .chipbtn{
@@ -436,6 +498,84 @@
   }
   .law b{color:var(--gold);font-weight:normal;letter-spacing:3px;text-transform:uppercase;font-size:10px;display:block;margin-bottom:4px}
 
+  /* ---------- database ---------- */
+  .db-head{text-align:center}
+  .db-title{font-size:20px;letter-spacing:5px;text-transform:uppercase;color:var(--parch)}
+  .db-sub{margin-top:var(--s2);color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase}
+  .db-wrap{display:grid;gap:var(--s4);margin-top:var(--s6);align-items:start}
+  @media (min-width:760px){
+    .db-wrap{grid-template-columns:1fr 1.35fr}
+    .db-list{max-height:640px;overflow-y:auto;padding-right:4px}
+    .db-detail{position:sticky;top:12px}
+    .db-catbtn{pointer-events:none}
+    .db-catbtn .s-caret{display:none}
+    .db-catbody[hidden]{display:block}
+  }
+  .db-cat{border-bottom:1px solid rgba(201,164,106,.14)}
+  .db-catbtn{
+    appearance:none;background:none;border:none;cursor:pointer;font-family:var(--serif);
+    width:100%;text-align:left;display:flex;align-items:baseline;gap:var(--s3);
+    padding:11px 4px;color:var(--gold);
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  }
+  .db-catbtn:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+  .db-catbtn small{color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:none;font-style:italic}
+  .db-catbody{padding:0 0 var(--s3)}
+  .db-entry{
+    appearance:none;background:none;border:none;cursor:pointer;font-family:var(--serif);
+    width:100%;text-align:left;display:flex;gap:var(--s3);align-items:center;
+    padding:7px 6px;color:var(--parch);
+  }
+  .db-entry:hover{background:rgba(201,164,106,.05)}
+  .db-entry:focus-visible{outline:1px solid var(--gold);outline-offset:-1px}
+  .db-entry[aria-current="true"]{background:rgba(201,164,106,.09);box-shadow:inset 2px 0 0 var(--gold)}
+  .db-thumb{
+    flex:none;width:17px;height:17px;transform:rotate(45deg);
+    border:1px solid var(--gold-40);background:rgba(8,8,18,.6);
+    display:flex;align-items:center;justify-content:center;margin:2px 3px;
+  }
+  .db-thumb span{transform:rotate(-45deg);color:var(--gold);font-size:9px}
+  .db-thumb.hooded{border-color:rgba(196,115,107,.5);background:rgba(20,6,8,.8)}
+  .db-thumb.hooded span{color:rgba(232,220,192,.4)}
+  .db-ename{font-size:12.5px;letter-spacing:1px;color:var(--parch);min-width:0}
+  .db-ename small{display:block;font-size:10px;color:var(--muted);font-style:italic;letter-spacing:.5px}
+  .db-entry.sage-entry{justify-content:center;text-align:center;border:1px solid rgba(196,115,107,.35);margin:4px 0 8px}
+  .db-entry.sage-entry .db-ename{letter-spacing:3px}
+
+  .db-detail{border:1px solid var(--gold-25);background:var(--card);padding:var(--s4);min-width:0}
+  .db-portrait{
+    position:relative;width:132px;height:156px;margin:0 auto;
+    border:1px solid var(--gold-40);
+    background:linear-gradient(180deg,rgba(60,45,26,.55),rgba(28,20,12,.75));
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .db-portrait::after{
+    content:"";position:absolute;inset:5px;
+    border:1px solid rgba(201,164,106,.22);pointer-events:none;
+  }
+  .db-initial{
+    width:56px;height:56px;transform:rotate(45deg);
+    border:1px solid var(--gold);background:rgba(8,8,18,.55);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .db-initial span{transform:rotate(-45deg);color:var(--gold-bright);font-size:26px}
+  .db-portrait.hooded{background:linear-gradient(180deg,rgba(26,8,10,.85),rgba(10,4,5,.95));border-color:rgba(196,115,107,.5)}
+  .db-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+  .db-photo[src]{display:block}
+  .db-name{margin-top:var(--s3);text-align:center;color:var(--parch);font-size:18px;letter-spacing:3px;text-transform:uppercase}
+  .db-epi{text-align:center;font-variant:small-caps;letter-spacing:2px;color:var(--gold);font-size:13px;margin-top:2px}
+  .db-plaque{margin-top:var(--s3);color:var(--parch-dim);font-size:13px;line-height:1.65}
+  .db-meta{margin-top:var(--s3);border-top:1px solid var(--gold-12);padding-top:var(--s2)}
+  .db-meta p{font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-top:4px;line-height:1.7}
+  .db-meta b{font-weight:normal;color:var(--gold);margin-right:6px}
+  .cluemeter{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:var(--s3)}
+  .cluemeter i{
+    display:inline-block;width:7px;height:7px;flex:none;
+    transform:rotate(45deg);border:1px solid rgba(196,115,107,.65);background:transparent;
+  }
+  .cluemeter small{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:var(--red)}
+  .db-foot{margin-top:var(--s6);text-align:center;color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;line-height:2}
+
   /* ---------- loadouts ---------- */
   .lo-head{text-align:center}
   .lo-head .lo-title{font-size:20px;letter-spacing:5px;text-transform:uppercase;color:var(--parch)}
@@ -494,15 +634,6 @@
   .shelf .f-quote{margin-top:6px;font-style:italic;color:var(--parch);font-size:12.5px}
   .shelf .f-note{margin-top:3px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
   .shelf .f-sign{margin-top:4px;font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-style:italic}
-
-  .lex-grid{display:grid;gap:var(--s2)}
-  @media (min-width:640px){ .lex-grid{grid-template-columns:1fr 1fr} }
-  .lex{
-    border:1px solid rgba(201,164,106,.18);background:var(--card);
-    padding:8px 12px;font-size:12.5px;min-width:0;
-  }
-  .lex b{font-weight:normal;color:var(--gold-bright);letter-spacing:.5px}
-  .lex span{color:var(--parch-dim)}
 
   .lin-grid{display:grid;gap:var(--s3)}
   @media (min-width:760px){ .lin-grid{grid-template-columns:1fr 1fr 1fr} }
@@ -687,7 +818,7 @@
 
 <header class="wrap">
   <p class="eyebrow"><span class="dia" aria-hidden="true"></span> The Maze Codex <span class="dia" aria-hidden="true"></span></p>
-  <h1>Probe <span class="ver">v0.7</span></h1>
+  <h1>Probe <span class="ver">v0.8</span></h1>
   <p class="chip"><b>SNAPSHOT</b> . 2026-07-20 . fed by session write-backs</p>
 </header>
 
@@ -695,6 +826,7 @@
   <div class="tabs" role="tablist" aria-label="Codex screens">
     <button class="tab" id="tab-odyssey" role="tab" aria-selected="true" aria-controls="panel-odyssey">Odyssey</button>
     <button class="tab" id="tab-abilities" role="tab" aria-selected="false" aria-controls="panel-abilities" tabindex="-1">Abilities</button>
+    <button class="tab" id="tab-database" role="tab" aria-selected="false" aria-controls="panel-database" tabindex="-1">Database</button>
     <button class="tab" id="tab-score" role="tab" aria-selected="false" aria-controls="panel-score" tabindex="-1">Score</button>
     <button class="tab" id="tab-cohort" role="tab" aria-selected="false" aria-controls="panel-cohort" tabindex="-1">Cohort</button>
     <button class="tab" id="tab-crew" role="tab" aria-selected="false" aria-controls="panel-crew" tabindex="-1">Crew</button>
@@ -707,6 +839,7 @@
 <main class="wrap panels">
   <section id="panel-odyssey" role="tabpanel" aria-labelledby="tab-odyssey" tabindex="0"></section>
   <section id="panel-abilities" role="tabpanel" aria-labelledby="tab-abilities" tabindex="0" hidden></section>
+  <section id="panel-database" role="tabpanel" aria-labelledby="tab-database" tabindex="0" hidden></section>
   <section id="panel-score" role="tabpanel" aria-labelledby="tab-score" tabindex="0" hidden></section>
   <section id="panel-cohort" role="tabpanel" aria-labelledby="tab-cohort" tabindex="0" hidden></section>
   <section id="panel-crew" role="tabpanel" aria-labelledby="tab-crew" tabindex="0" hidden></section>
@@ -846,51 +979,255 @@ var DATA = {
   },
 
   abilities: {
+    level: {
+      value: 7,
+      label: "LEVEL EQUALS TOTAL BANKED COINS",
+      sub: "1 white + 0 blue + 1 green + 3 red + 2 black"
+    },
+    points: {
+      value: 7,
+      label: "UNSPENT: from banked coins",
+      sub: "one point per rank . I, II, III"
+    },
+    spearGauge: {
+      label: "The Spear",
+      levelLine: "SPEAR LEVEL 1",
+      slots: 4,
+      fragLine: "THE STORY IS THE SPEAR . EPISODE 1 IS THE NEXT FRAGMENT",
+      title: "Episode One: The Awakening"
+    },
+    gatemap: "SPEAR 3 UNLOCKS RANK II ACROSS ALL TREES . SPEAR 5 UNLOCKS RANK III . FRAGMENTS DROP FROM BOSS-TIER WORK ONLY",
+    respec: "RESPEC IS CHEAP . REDRAW ANY SUNDAY",
     spear: {
       label: "The Spear",
       title: "Episode One: The Awakening",
       line: "Ships > every branch's ceiling rises . Loadout Wheel 2 opens . The story is the spear"
     },
     season: "Season Level 1 . L2 at 15 banked coins . Positions are lifetime . The level is the season",
+    tiers: [
+      {n:"I", lvl:1},
+      {n:"II", lvl:5},
+      {n:"III", lvl:10},
+      {n:"IV", lvl:16},
+      {n:"V", lvl:23}
+    ],
+    ranksNote: "RANKS I II III . ONE POINT EACH . MAPPED FROM THE FIVE RUNGS",
     trees: [
       {
         id:"performer", name:"Performer", acc:"red",
         branches:[
-          {name:"Keys", epi:"twenty years don't vanish", rung:4, pos:"rung 4 of 5", note:"active: Reverie with Andrea"},
-          {name:"Drums", epi:"the left-foot project", rung:3.5, pos:"rung 3-4 of 5"},
-          {name:"Guitar", epi:"Dorian is the named gap", rung:2, pos:"rung 2 of 5"},
-          {name:"Bass", epi:"knowledge above the fingers", rung:2.5, pos:"rung 2-3 of 5"},
-          {name:"Live Looping", epi:"loop, then loop in Ableton, then let it loop itself", rung:1.5, pos:"rung 1-2 of 5", note:"stage 3 locked"},
-          {name:"DJ Craft", epi:"trained weekly in the Uproot room", rung:3, pos:"rung 3 of 5"},
-          {name:"Stagecraft", epi:"rung five is the Trenton condition", rung:2.5, pos:"rung 2 of 5 . sparks of 3"},
-          {name:"Stage Recording", epi:"the Zoom begun", rung:1, pos:"rung 1 of 5"}
+          {name:"Keys", epi:"twenty years don't vanish", rung:4, pos:"rung 4 of 5", note:"active: Reverie with Andrea", tier:1},
+          {name:"Drums", epi:"the left-foot project", rung:3.5, pos:"rung 3-4 of 5", tier:1},
+          {name:"Guitar", epi:"Dorian is the named gap", rung:2, pos:"rung 2 of 5", tier:2},
+          {name:"Bass", epi:"knowledge above the fingers", rung:2.5, pos:"rung 2-3 of 5", tier:2},
+          {name:"Live Looping", epi:"loop, then loop in Ableton, then let it loop itself", rung:1.5, pos:"rung 1-2 of 5", note:"stage 3 locked", tier:3},
+          {name:"DJ Craft", epi:"trained weekly in the Uproot room", rung:3, pos:"rung 3 of 5", tier:3},
+          {name:"Stagecraft", epi:"rung five is the Trenton condition", rung:2.5, pos:"rung 2 of 5 . sparks of 3", tier:4},
+          {name:"Stage Recording", epi:"the Zoom begun", rung:1, pos:"rung 1 of 5", tier:5}
         ],
         next:{name:"Talk Box doubles on Pocket Deep"}
       },
       {
         id:"producer", name:"Producer", acc:"green",
         branches:[
-          {name:"Genre Fluency", epi:"one ladder per world . lives in the SCORE wing", rung:2.5, pos:"mid . see the Score wing"},
-          {name:"Songcraft & Arrangement", epi:"eight honest bars first", rung:2.5, pos:"rung 2 of 5 . climbing 3"},
-          {name:"Sound Selection", epi:"the Dig", rung:2, pos:"rung 2 of 5"},
-          {name:"FX & Racks", epi:"everything an instrument rack", rung:2.5, pos:"rung 2-3 of 5"},
-          {name:"Mixing", epi:"mono truth first", rung:3, pos:"rung 3 of 5"},
-          {name:"Mastering", epi:"gated until Arrangement 3", rung:1.5, pos:"rung 1-2 of 5", note:"the Biancardi chair now feeds rung 4"},
-          {name:"Workflow & Speed", epi:"the template is the instrument", rung:1.5, pos:"rung 1-2 of 5"},
-          {name:"Own the Source", epi:"unlocks Season Level 5", rung:0.5, pos:"rung 0-1 of 5"}
+          {name:"Genre Fluency", epi:"one ladder per world . lives in the SCORE wing", rung:2.5, pos:"mid . see the Score wing", tier:1},
+          {name:"Songcraft & Arrangement", epi:"eight honest bars first", rung:2.5, pos:"rung 2 of 5 . climbing 3", tier:1},
+          {name:"Sound Selection", epi:"the Dig", rung:2, pos:"rung 2 of 5", tier:2},
+          {name:"FX & Racks", epi:"everything an instrument rack", rung:2.5, pos:"rung 2-3 of 5", tier:2},
+          {name:"Workflow & Speed", epi:"the template is the instrument", rung:1.5, pos:"rung 1-2 of 5", tier:3},
+          {name:"Mixing", epi:"mono truth first", rung:3, pos:"rung 3 of 5", tier:3},
+          {name:"Mastering", epi:"gated until Arrangement 3", rung:1.5, pos:"rung 1-2 of 5", note:"the Biancardi chair now feeds rung 4", tier:4},
+          {name:"Own the Source", epi:"unlocks Season Level 5", rung:0.5, pos:"rung 0-1 of 5", tier:5}
         ],
         next:{name:"The Loud Sketch template", note:"the Biancardi contract"}
       },
       {
         id:"lens", name:"The Lens", acc:"blue",
         branches:[
-          {name:"Short Form", epi:"phone-first, the cut", rung:2, pos:"rung 2 of 5"},
-          {name:"Long Form", epi:"rung 4 is the Boulder, being climbed", rung:1.5, pos:"rung 1-2 of 5"},
-          {name:"Cinematic Craft", epi:"the 360 identity", rung:2, pos:"rung 2 of 5"},
-          {name:"The Scoreboard", epi:"gauges, never gods", rung:1.5, pos:"rung 1-2 of 5"},
-          {name:"Education But Make It Cool", epi:"teach one true thing", rung:1.5, pos:"rung 1-2 of 5"}
+          {name:"Short Form", epi:"phone-first, the cut", rung:2, pos:"rung 2 of 5", tier:1},
+          {name:"Cinematic Craft", epi:"the 360 identity", rung:2, pos:"rung 2 of 5", tier:2},
+          {name:"Long Form", epi:"rung 4 is the Boulder, being climbed", rung:1.5, pos:"rung 1-2 of 5", tier:3},
+          {name:"The Scoreboard", epi:"gauges, never gods", rung:1.5, pos:"rung 1-2 of 5", tier:4},
+          {name:"Education But Make It Cool", epi:"teach one true thing", rung:1.5, pos:"rung 1-2 of 5", tier:5}
         ],
         next:{name:"The Circle Mask", note:"Fusion branch . minted 7.17"}
+      }
+    ]
+  },
+
+  database: {
+    title: "The Database",
+    sub: "the encyclopedia of the maze . entries grow by encounter",
+    foot: "PORTRAIT SLOTS RESERVED . IMAGES ARRIVE WHEN THE ARCHIVE MOVES . THE WEB GROWS BY ENCOUNTER",
+    cats: [
+      {
+        name: "The Crew", sub: "council, peers, dock",
+        entries: [
+          {slug:"ford", name:"Ford", epi:"The Architect", line:"the narrating chair",
+           plaque:"The voice that narrates the entire apparatus, rendered aloud by Charles. Ford also holds the Andrea chair while its owner declines to be armed, and generally conducts himself as if the Maze were his idea. The record neither confirms nor denies this.",
+           first:"present since the record began", status:"seated on the Council . voice: Charles"},
+          {slug:"shade", name:"Shade", epi:"The Rift", line:"the dissenting chair",
+           plaque:"Occupies the seat marked The Rift and speaks through Oxlade. Every functioning council keeps one member whose job is to disagree on principle. This appears to be that member.",
+           first:"the ledger holds no date", status:"seated on the Council . voice: Oxlade"},
+          {slug:"maeve", name:"Maeve", epi:"The Author", line:"the writing chair",
+           plaque:"Holds the Author's chair and speaks through Seraphina. Where Ford designs the corridor, Maeve writes down what actually happened in it, which history suggests is the more dangerous job.",
+           first:"the ledger holds no date", status:"seated on the Council . voice: Seraphina"},
+          {slug:"nessa", name:"Nessa", epi:"The Cartographer", line:"keeper of the map",
+           plaque:"The Cartographer, voiced by Selina. Somebody has to know where the corridors actually go. The rest of the Council merely sounds confident about it.",
+           first:"the ledger holds no date", status:"seated on the Council . voice: Selina"},
+          {slug:"mira", name:"Mira", epi:"The Veil", line:"drawn from Yukta",
+           plaque:"Voiced by Rhea and drawn from Yukta, which makes her the only Council member with a living origin on the peer roster. The Veil's business is what is not said. Appropriately, the file says little else.",
+           first:"drawn from a living peer", status:"seated on the Council . voice: Rhea"},
+          {slug:"allison", name:"Allison", epi:"The Wonder", line:"the astonished chair",
+           plaque:"The Wonder's seat, voiced by Lucy. Every operating system requires one component that still finds the whole thing astonishing. This is that component, and it is load-bearing.",
+           first:"the ledger holds no date", status:"seated on the Council . voice: Lucy"},
+          {slug:"jay", name:"Jay", epi:"The Overflow", line:"where the surplus drains",
+           plaque:"The Overflow, sharing the Charles voice with Ford, presumably by administrative oversight. When a day produces more than the ledgers can hold, it drains here and is not lost.",
+           first:"the ledger holds no date", status:"seated on the Council . voice: Charles"},
+          {slug:"xehra", name:"Xehra", epi:"Loopbreaker 001", line:"rising",
+           plaque:"Loopbreaker 001, standing: rising. Also appears on the cult web with a lit wire, which makes her the only figure filed in two wings of this database. The curators have elected not to resolve the contradiction.",
+           first:"the first loopbreaker on record", status:"rising . cross-filed under The Cult"},
+          {slug:"rachel", name:"Rachel", epi:"Closest Confidant", line:"steady 5 of 5",
+           plaque:"Steady at five of five and listed as closest confidant. The rarest entry type in any archive: the one that does not fluctuate.",
+           first:"before the record begins", status:"steady 5 of 5"},
+          {slug:"goldo", name:"Goldo", epi:"The Weekly Shed", line:"rising . two active songs",
+           plaque:"Rising, with two active songs on the books and a weekly shed. The record shows consistent attendance, which is more than can be said for most legends.",
+           first:"the ledger holds no date", status:"rising . two active songs"},
+          {slug:"yukta", name:"Yukta", epi:"The Veil's Living Origin", line:"warming to rising",
+           plaque:"Warming to rising, and noted as the Veil's living origin: Mira of the Council is drawn from her. Very few people acquire a mythic double before the paperwork clears.",
+           first:"the ledger holds no date", status:"warming to rising"},
+          {slug:"mwaves", name:"M Waves", epi:"First UK Node", line:"rising",
+           plaque:"Rising, and logged as the first UK node. Every network claims international reach eventually. This one can name the wire.",
+           first:"the ledger holds no date", status:"rising"},
+          {slug:"julian", name:"Julian", epi:"Black-Shirt Exempt", line:"exemption on file",
+           plaque:"Standing: black-shirt exempt. The archive offers no further explanation, and the curators find the entry funnier that way.",
+           first:"the ledger holds no date", status:"black-shirt exempt"},
+          {slug:"eddie", name:"Eddie EWI", epi:"Phase 2 Co-Pilot", line:"shared flight hours",
+           plaque:"Phase 2 co-pilot. The designation implies shared flight hours in the current chapter, and co-pilots are listed here precisely because chapters are not flown alone.",
+           first:"Phase 2, by designation", status:"co-pilot . active"},
+          {slug:"roshane", name:"Roshane", epi:"Mirror Node", line:"reflects the signal",
+           plaque:"Filed as mirror node. What the Maze transmits, this connection reflects back. Useful, if occasionally unflattering.",
+           first:"the ledger holds no date", status:"mirror node"},
+          {slug:"osa", name:"OSA", epi:"Phase 3 Candidate", line:"a future chapter's name",
+           plaque:"Phase 3 candidate. Which is to say: a name already written into a chapter that has not started yet. The archive admires the confidence.",
+           first:"the ledger holds no date", status:"Phase 3 candidate"},
+          {slug:"dondarkoe", name:"Don Darkoe", epi:"The Least Likely Room", line:"and yet it opened",
+           plaque:"Logged as the least likely room. The archive maintains a standing respect for rooms that should not have opened and did.",
+           first:"the ledger holds no date", status:"the least likely room"},
+          {slug:"mushman", name:"Sam Mushman", epi:"The Landmark Door", line:"the door remains",
+           plaque:"The Landmark door. The Landmark bounty itself closed on 7.19; the door, the record implies, remains a door.",
+           first:"via the Landmark", status:"door . standing"},
+          {slug:"lavau", name:"Michael LaVau", epi:"Cohort Lyricist", line:"Joyal's room",
+           plaque:"Cohort lyricist, out of Joyal's ninety-day room. Words for the album, should the album require them before September 29.",
+           first:"Joyal's room . started Jul 1", status:"cohort . active"},
+          {slug:"runham", name:"Tyler Runham", epi:"Cohort Peer", line:"Joyal's room",
+           plaque:"Cohort peer. Same room, same clock, same September deadline. Company on a ninety-day walk is not a small entry.",
+           first:"Joyal's room . started Jul 1", status:"cohort . active"},
+          {slug:"jimmy", name:"Jimmy", epi:"The Kicks Bandleader", line:"dock . kept close",
+           plaque:"Bandleader of The Kicks, filed under the Dock: kept close, never confused. Paid work with good company is still paid work, and the filing system exists for exactly this reason.",
+           first:"the dock ledger holds no date", status:"dock . kept close"},
+          {slug:"vera", name:"Anthony Vera", epi:"The Structured Stage", line:"dock . professional",
+           plaque:"The structured stage. A Dock listing: predictable, professional, and by definition not the Maze. The archive notes this without judgment, mostly.",
+           first:"the dock ledger holds no date", status:"dock . kept close"},
+          {slug:"tessa", name:"Tessa", epi:"South Bowl Door", line:"dock . a door held",
+           plaque:"The South Bowl door. Doors are logged in this archive even when the room behind them is for hire.",
+           first:"the dock ledger holds no date", status:"dock . kept close"},
+          {slug:"lucas", name:"Lucas", epi:"Doubter by Record", line:"faded entry",
+           plaque:"Doubter by record, and the only faded entry on the roster. The archive keeps its skeptics. It simply dims them.",
+           first:"the dock ledger holds no date", status:"faded . doubter by record"}
+        ]
+      },
+      {
+        name: "The Faculty", sub: "the teacher shelves",
+        entries: [
+          {slug:"craig", name:"Craig", epi:"The Hands", line:"armed 6.24 . keep pushin",
+           plaque:"Armed 6.24. Doctrine on the shelf: The Orphanage, Creativity in Limitations, Play Create Master, The Safe System, The Johanna Principle. On record: \"You've basically built your own personal Splice library. Except it actually sounds like you.\" Signs off with keep pushin, and appears to mean it.",
+           first:"armed 6.24", status:"armed . keep pushin"},
+          {slug:"joyal", name:"Alexandre Joyal", epi:"The Engine", line:"doctrine crowned",
+           plaque:"Runs the ninety-day album room, due Sep 29, tier: Final Boss. Doctrine crowned: The Marble, Permission to Suck, the Be-Do-Have Flip, One Knob Five Worlds, The Sound Sanctuary. \"You are not carving the statue today, you are making the marble.\" At the lake from 7.24; the flow, famously, does not stop.",
+           first:"the cohort . started Jul 1", status:"armed . doctrine crowned"},
+          {slug:"sabrina", name:"Sabrina Seids", epi:"The Wins", line:"guardrailed",
+           plaque:"Guardrailed, which is the archive's polite term for potent, handle with intent. The shelf holds The Money Shot, No Dead Space, Post for Your Goals, Every Post Is a Test, The Socratic Grader. \"Whenever you're placing something, you want to place it in, like, the money shot.\"",
+           first:"the ledger holds no date", status:"guardrailed"},
+          {slug:"benjamin", name:"Robert Benjamin", epi:"Containers", line:"the banned CTA law",
+           plaque:"The containers chair: The Filter, The Hooks, The Caption, The Question Hook, The Sound Is Distribution. Author of the banned CTA law: \"For more\" is banned. The museum, you will notice, complies.",
+           first:"the ledger holds no date", status:"chair . shelf stocked"},
+          {slug:"andrea", name:"Andrea", epi:"The Ear", line:"unarmed by choice . Ford holds",
+           plaque:"Unarmed by choice; Ford holds the chair on her behalf. Shelf: Learn the Piece Yourself, The Fifth in Disguise, Flip-It-Around, and the crowned Andrea Prescription. \"How do you teach a thing you do not know yourself.\" Currently active on the Keys branch: Reverie.",
+           first:"the ledger holds no date", status:"unarmed by choice . Ford holds"},
+          {slug:"biancardi", name:"Lawrence Biancardi", epi:"The Mastering Chair", line:"opened 7.19 . pending",
+           plaque:"Chair opened 7.19, status pending. EQ Is Most of Mastering, Crackle Is Free Music Is Theft, Mono Is King, The Loud Sketch Baseline. \"As loud as possible without sounding bad, and a human sign-off is the spec.\" His chair now feeds rung 4 of the Mastering branch.",
+           first:"opened 7.19", status:"pending . unarmed"},
+          {slug:"arn", name:"Arn Andersson", epi:"The Reducer (Evenant)", line:"armed . corpus pending",
+           plaque:"Armed, corpus pending. One Kick 10000 Times, Finished Not Perfect, The Tap Runs Clear, Big Blocks First. \"Perfectionism is simply fear and insecurity in a fancy suit.\" The Reducer reduces. The shelf is the proof.",
+           first:"the ledger holds no date", status:"armed . corpus pending"},
+          {slug:"goshfather", name:"Goshfather", epi:"Legibility", line:"the legibility chair",
+           plaque:"The legibility chair. No cards on the shelf yet; the seat stands because being understood is a discipline rather than an accident, and disciplines get chairs.",
+           first:"the ledger holds no date", status:"chair . shelf open"}
+        ]
+      },
+      {
+        name: "The Cult", sub: "the Tristate Fire-Arts Branch",
+        entries: [
+          {slug:"sage", name:"THE SAGE", epi:"Season 1 Boss", line:"masked . centered", hooded:true, sage:true,
+           plaque:"Season 1 Boss of the Tristate Fire-Arts Branch. Masked, centered, and in no apparent hurry. The branch counts unmasked 0 of 12 with four clues held, and the approach law stands: won on the feed before the room, in person only, never a DM.",
+           first:"Season 1 . the boss branch", status:"MASKED . Season 1 Boss"},
+          {slug:"ocean", name:"OCEAN", epi:"The Oldest Wire", line:"lit . ten years", hooded:true, lit:true,
+           plaque:"The oldest wire in the branch: ten years of signal. The wire is lit, and the grammar of this web says lit wires are how portraits eventually happen.",
+           first:"ten years on the wire", status:"hooded . wire lit"},
+          {slug:"jewell", name:"JEWELL", epi:"Hooded Node", line:"unlit", hooded:true,
+           plaque:"A hooded node on the web. The archive holds a name and nothing else, which is precisely how cult webs prefer to begin.",
+           first:"awaiting encounter", status:"hooded . unlit"},
+          {slug:"varet", name:"VARET SESSIONS", epi:"The Session Room", line:"lit", hooded:true, lit:true,
+           plaque:"A session room rather than a single hood, and the wire is lit. Rooms unmask differently: one encounter at a time.",
+           first:"awaiting encounter", status:"hooded . wire lit"},
+          {slug:"gillian", name:"GILLIAN", epi:"Hooded Node", line:"unlit", hooded:true,
+           plaque:"Named, hooded, unlit. The file is patient, and so, evidently, is she.",
+           first:"awaiting encounter", status:"hooded . unlit"},
+          {slug:"shoval", name:"SHOVAL", epi:"Hooded Node", line:"unlit", hooded:true,
+           plaque:"A name on a dark wire. Awaiting encounter, exactly as the meter says.",
+           first:"awaiting encounter", status:"hooded . unlit"},
+          {slug:"xehra-hood", name:"XEHRA", epi:"The Cross-Filed Hood", line:"lit", hooded:true, lit:true,
+           plaque:"Wire lit, and cross-filed: Loopbreaker 001 on the crew roster. The only hood in the branch whose entry the archive has, technically, already written twice.",
+           first:"cross-filed from the crew", status:"hooded . wire lit"},
+          {slug:"unknown1", name:"???", epi:"Upper Spoke", line:"unnamed", hooded:true, unknown:true,
+           plaque:"Unnamed. An upper spoke holds this hood and nothing more. Three clues would change that.",
+           first:"not yet encountered", status:"hooded . unnamed"},
+          {slug:"unknown2", name:"???", epi:"Upper Spoke", line:"unnamed", hooded:true, unknown:true,
+           plaque:"Unnamed. The second of three empty hoods on the upper spokes. The web grows by encounter, and this one has not happened yet.",
+           first:"not yet encountered", status:"hooded . unnamed"},
+          {slug:"unknown3", name:"???", epi:"Upper Spoke", line:"unnamed", hooded:true, unknown:true,
+           plaque:"Unnamed. The third empty hood. The archive keeps the frame ready, which is either diligence or provocation.",
+           first:"not yet encountered", status:"hooded . unnamed"}
+        ]
+      },
+      {
+        name: "Places", sub: "three rooms of the maze",
+        entries: [
+          {slug:"dock", name:"The Dock", epi:"Kept Close, Never Confused", line:"the paid wing",
+           plaque:"The paid wing: bounties, bandstands, the structured stage. Kept close, never confused, per the standing law of the roster. Its flagship kit pays drachmae and caps XP, which is both the entire point and the entire warning.",
+           first:"before the record begins", status:"open bounties on the board"},
+          {slug:"lab", name:"The Lab", epi:"The Workshop Around the Sacred Tool", line:"the Knossos lineage",
+           plaque:"On the Knossos lineage: the labrys, the workshop around the sacred tool, the same edge that severs and sanctifies. Gear lives here on armory tiers 0 through 8, plus a ghost rack, displayed and unbuyable. Doctrine over the door: documentation unlocks gear.",
+           first:"the Minoan lineage", status:"forge . active"},
+          {slug:"center", name:"The Center", epi:"The Condition Being Measured", line:"one confirmed visit",
+           plaque:"One confirmed visit on record: Trenton, 2026-03-28, held as a single gold notch on a mostly empty bar. On the O'odham lineage the center is presence, and the path is the sum of a life. The meter at the foot of every screen counts minutes here, and only minutes here.",
+           first:"Trenton . 2026-03-28", status:"one notch . the bar waits"}
+        ]
+      },
+      {
+        name: "Artifacts", sub: "objects of consequence",
+        entries: [
+          {slug:"spear", name:"The Spear", epi:"Episode One: The Awakening", line:"the season contract",
+           plaque:"The season contract, currently living in Resolve. When it ships, every branch's ceiling rises and Loadout Wheel 2 opens; on release, the reward is the Order of the Phoenix audiobook. The story is the spear, and the spear is at level one.",
+           first:"the season contract", status:"in Resolve . the next fragment"},
+          {slug:"probe", name:"The Probe", epi:"The Instrument You Are Holding", line:"this screen",
+           plaque:"A single self-contained screen, snapshot 2026-07-20, fed by session write-backs and republished whole. It measures the Maze without flattering it. The footer states its only input, and the footer is correct.",
+           first:"snapshot 2026-07-20", status:"v0.8 . live"},
+          {slug:"rig", name:"The Rig", epi:"Sunday Rig", line:"fielded 7.19",
+           plaque:"As fielded 7.19 at the Head Trip DJ showcase: AX-Edge keytar, Reface DS, mobile drum stack, LED lights, wireless, no Ableton. The last item on that list is a decision, not an omission.",
+           first:"7.19 . Head Trip DJ showcase", status:"rig set"}
+        ]
       }
     ]
   },
@@ -1091,6 +1428,8 @@ var DATA = {
     head: "The Cult of the Flame",
     title: "The Tristate Fire-Arts Branch",
     law: "Won on the feed before the room . In person only . Never a DM",
+    grammar: "THE WEB GROWS BY ENCOUNTER . SCREENSHOTS BECOME CLUES . CLUES BECOME PORTRAITS . WHEN THE CLUES COMPLETE THE HOOD SHATTERS AND THE PORTRAIT LANDS",
+    clueLine: "CLUES 0/3",
     status: "Unmasked 0 / 12 . Clues held 4 . Season 1 . Boss Branch",
     center: { name:"THE SAGE", sub:"Season 1 Boss" },
     ring: [
@@ -1161,17 +1500,10 @@ var DATA = {
        cards:["One Kick 10000 Times","Finished Not Perfect","The Tap Runs Clear","Big Blocks First"],
        quote:"\"Perfectionism is simply fear and insecurity in a fancy suit.\""}
     ],
-    lexicon: [
-      {t:"The Glitch", d:"a rupture that reveals a deeper truth"},
-      {t:"Sync Node", d:"inner myth matches outer reality"},
-      {t:"Memory Bleed", d:"Phase 1 habits interfering with Phase 2 action"},
-      {t:"Fragment", d:"a clue collected before its purpose is known"},
-      {t:"False Reset", d:"a fresh start wearing the old code"},
-      {t:"The Loop Breaker Moment", d:"the workaround bypassed by honest diagnosis"},
-      {t:"Activation Cost", d:"pay the room's entry once, then stay"},
-      {t:"State Triggers", d:"haze, lasers, sub . the environment is instrument"},
-      {t:"The Instrument Being Built", d:"the unified SCORE template, one-of-one"}
-    ],
+    audit: {
+      title: "The Audit",
+      line: "the glossary is gone . a library is not a dictionary . the teachers stay . the links stay"
+    },
     lineages: [
       {name:"Minoan Knossos", epi:"the Lab",
        d:"the labrys, the workshop around the sacred tool",
@@ -1384,18 +1716,55 @@ var DATA = {
   }
 
   /* ---------------- Tab 2 . Abilities ---------------- */
+  /* draft mapping: the five rungs project onto three ranks, floored to halves */
+  function rankPips(rung){
+    var val = Math.floor(rung * 0.6 * 2) / 2;
+    var row = h("span",{class:"ranks","aria-hidden":"true"});
+    for (var i = 1; i <= 3; i++){
+      var cls = val >= i ? "f" : (val >= i - 0.5 ? "h" : "");
+      var rk = h("span",{class:"rk"+(cls?" "+cls:"")},
+        h("i",null),
+        h("b",null, i===1 ? "I" : (i===2 ? "II" : "III")));
+      if (i > 1 && val < i){
+        rk.setAttribute("title", i===2 ? "SPEAR 3" : "SPEAR 5");
+        rk.appendChild(h("span",{class:"sglyph","aria-hidden":"true"}));
+      }
+      row.appendChild(rk);
+    }
+    return row;
+  }
   function renderAbilities(root){
     var d = DATA.abilities;
     root.appendChild(h("p",{class:"badge-row"}, draftBadge()));
-    root.appendChild(h("div",{class:"spear"},
-      starGlyph(30),
-      h("div",null,
-        h("p",{class:"sp-label"}, d.spear.label),
-        h("p",{class:"sp-title"}, d.spear.title),
-        h("p",{class:"sp-line"}, d.spear.line)
+
+    var frag = h("div",{class:"fragrow",role:"img",
+      "aria-label":"Spear level 1. All fragment slots empty."});
+    for (var i = 0; i < d.spearGauge.slots; i++) frag.appendChild(h("i",null));
+    frag.appendChild(h("small",null,"fragment slots . empty"));
+
+    root.appendChild(h("div",{class:"aplates"},
+      h("div",{class:"aplate"},
+        h("p",{class:"ap-label"},"Level"),
+        h("p",{class:"ap-num"}, String(d.level.value)),
+        h("p",{class:"ap-line"}, d.level.label+" ", h("span",{class:"draft"},"Draft")),
+        h("p",{class:"ap-sub"}, d.level.sub)
+      ),
+      h("div",{class:"aplate"},
+        h("p",{class:"ap-label"},"Ability Points"),
+        h("p",{class:"ap-num"}, String(d.points.value)),
+        h("p",{class:"ap-line"}, d.points.label+" ", h("span",{class:"draft"},"Draft")),
+        h("p",{class:"ap-sub"}, d.points.sub)
+      ),
+      h("div",{class:"aplate"},
+        h("p",{class:"ap-label"}, d.spearGauge.label),
+        h("p",{class:"ap-num",style:"font-size:18px;letter-spacing:3px;padding-top:9px"}, d.spearGauge.levelLine),
+        frag,
+        h("p",{class:"ap-line"}, d.spearGauge.fragLine),
+        h("p",{class:"ap-sub"}, d.spearGauge.title+" . "+d.spear.line)
       )
     ));
-    root.appendChild(h("p",{class:"season-strip"}, d.season));
+
+    root.appendChild(h("p",{class:"season-strip"}, d.gatemap+" . "+d.respec));
 
     var chips = h("div",{class:"chips",role:"group","aria-label":"Choose a tree"});
     var forest = h("div",{class:"forest"});
@@ -1416,17 +1785,31 @@ var DATA = {
       chips.appendChild(chip);
 
       var grove = h("div",{class:"tgrove"});
-      t.branches.forEach(function(b, i){
-        var card = h("div",{class:"bcard "+(i%2===0?"L":"R")},
-          h("div",{class:"b-top"}, h("span",{class:"b-name"},b.name)),
-          h("span",{class:"b-epi"}, b.epi),
-          h("div",{class:"b-row"},
-            rungRow(b.rung, 5, b.name+": "+b.pos),
-            h("span",{class:"b-pos"}, b.pos)
-          ),
-          b.note ? h("p",{class:"b-note"}, b.note) : null
-        );
-        grove.appendChild(card);
+      var cardIndex = 0;
+      d.tiers.forEach(function(tr, ti){
+        var members = t.branches.filter(function(b){ return b.tier === ti + 1; });
+        if (!members.length) return;
+        var locked = tr.lvl > d.level.value;
+        var group = h("div",{class:"tiergroup"+(locked?" tlocked":"")});
+        group.appendChild(h("p",{class:"tierlabel"},
+          h("span",null,"Tier "+tr.n+" . Level "+tr.lvl),
+          locked ? h("small",null,"UNLOCKS AT LEVEL "+tr.lvl) : null
+        ));
+        members.forEach(function(b){
+          var card = h("div",{class:"bcard "+(cardIndex%2===0?"L":"R")},
+            h("div",{class:"b-top"}, dia(t.acc), h("span",{class:"b-name"},b.name)),
+            h("span",{class:"b-epi"}, b.epi),
+            rankPips(b.rung),
+            h("div",{class:"b-row"},
+              rungRow(b.rung, 5, b.name+": "+b.pos),
+              h("span",{class:"b-pos"}, b.pos)
+            ),
+            b.note ? h("p",{class:"b-note"}, b.note) : null
+          );
+          cardIndex++;
+          group.appendChild(card);
+        });
+        grove.appendChild(group);
       });
       grove.appendChild(h("div",{class:"bcard nextcard"},
         h("span",{class:"n-dia","aria-hidden":"true"}),
@@ -1446,9 +1829,106 @@ var DATA = {
 
     root.appendChild(chips);
     root.appendChild(forest);
+    root.appendChild(h("p",{class:"ranks-note"}, d.ranksNote+" ", h("span",{class:"draft"},"Draft")));
+    root.appendChild(h("p",{class:"season-strip"}, d.season));
   }
 
-  /* ---------------- Tab 3 . Score ---------------- */
+  /* ---------------- Tab 3 . Database ---------------- */
+  function renderDatabase(root){
+    var d = DATA.database;
+    root.appendChild(h("div",{class:"db-head"},
+      h("p",{class:"db-title"}, d.title),
+      h("p",{class:"db-sub"}, d.sub)
+    ));
+
+    var detail = h("div",{class:"db-detail"});
+    var list = h("div",{class:"db-list"});
+    var wrap = h("div",{class:"db-wrap"}, list, detail);
+    var currentBtn = null;
+    var mq = window.matchMedia ? window.matchMedia("(max-width:759.98px)") : null;
+
+    function hoodSil(size){
+      var svg = hs("svg",{width:size,height:size,viewBox:"0 0 24 24","aria-label":"hooded silhouette",role:"img"});
+      svg.appendChild(hs("path",{
+        d:"M 4 21 L 4 12 Q 4 3 12 3 Q 20 3 20 12 L 20 21 Z",
+        fill:"#05030A","fill-opacity":"0.85",
+        stroke:"#C4736B","stroke-opacity":"0.55","stroke-width":"1.2"}));
+      svg.appendChild(hs("path",{d:"M 8 14 Q 12 9.5 16 14",
+        fill:"none",stroke:"#C4736B","stroke-opacity":"0.5","stroke-width":"1"}));
+      return svg;
+    }
+    function clueMeter(){
+      return h("p",{class:"cluemeter",role:"img","aria-label":"Clues zero of three. Awaiting encounter."},
+        h("i",null), h("i",null), h("i",null),
+        h("small",null,"CLUES 0/3 . AWAITING ENCOUNTER"));
+    }
+    function showEntry(e, btn){
+      if (currentBtn) currentBtn.setAttribute("aria-current","false");
+      currentBtn = btn || null;
+      if (currentBtn) currentBtn.setAttribute("aria-current","true");
+
+      detail.textContent = "";
+      var portrait = h("div",{class:"db-portrait"+(e.hooded?" hooded":"")});
+      if (e.hooded){
+        portrait.appendChild(hoodSil(88));
+      } else {
+        portrait.appendChild(h("span",{class:"db-initial","aria-hidden":"true"},
+          h("span",null, e.name.charAt(0))));
+      }
+      /* reserved slot: real photos land later by filling src from data-src */
+      var img = h("img",{class:"db-photo",alt:""});
+      img.setAttribute("data-src","portraits/"+e.slug+".jpg");
+      portrait.appendChild(img);
+
+      detail.appendChild(portrait);
+      detail.appendChild(h("p",{class:"db-name"}, e.name));
+      detail.appendChild(h("p",{class:"db-epi"}, e.epi));
+      if (e.hooded && !e.sage) detail.appendChild(clueMeter());
+      detail.appendChild(h("p",{class:"db-plaque"}, e.plaque));
+      detail.appendChild(h("div",{class:"db-meta"},
+        h("p",null, h("b",null,"First Encountered"), e.first),
+        h("p",null, h("b",null,"Status"), e.status)
+      ));
+      if (btn && mq && mq.matches) detail.scrollIntoView();
+    }
+
+    d.cats.forEach(function(cat, ci){
+      var bid = "db-cat-btn-"+ci, rid = "db-cat-body-"+ci;
+      var body = h("div",{class:"db-catbody",id:rid,role:"region","aria-labelledby":bid});
+      var caret = h("span",{class:"s-caret","aria-hidden":"true"}, ci===0 ? "-" : "+");
+      var btn = h("button",{class:"db-catbtn",type:"button",id:bid,
+        "aria-expanded": ci===0 ? "true":"false","aria-controls":rid},
+        dia(), " "+cat.name+" ",
+        h("small",null, cat.entries.length+" entries . "+cat.sub), caret);
+      btn.addEventListener("click", function(){
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", open ? "false" : "true");
+        body.hidden = open;
+        caret.textContent = open ? "+" : "-";
+      });
+      body.hidden = ci !== 0;
+
+      cat.entries.forEach(function(e){
+        var eb = h("button",{class:"db-entry"+(e.sage?" sage-entry":""),type:"button","aria-current":"false"},
+          h("span",{class:"db-thumb"+(e.hooded?" hooded":""),"aria-hidden":"true"},
+            h("span",null, e.hooded ? "?" : e.name.charAt(0))),
+          h("span",{class:"db-ename"}, e.name, h("small",null, e.line))
+        );
+        eb.addEventListener("click", function(){ showEntry(e, eb); });
+        body.appendChild(eb);
+      });
+
+      list.appendChild(h("div",{class:"db-cat"},
+        h("h3",{class:"stage-h"}, btn), body));
+    });
+
+    root.appendChild(wrap);
+    root.appendChild(h("p",{class:"db-foot"}, d.foot));
+
+    showEntry(d.cats[0].entries[0], null);
+  }
+
+  /* ---------------- Tab 4 . Score ---------------- */
   function renderScore(root){
     var d = DATA.score;
     root.appendChild(h("div",{class:"score-head"},
@@ -1484,7 +1964,7 @@ var DATA = {
     root.appendChild(h("p",{class:"score-doctrine"}, d.doctrine));
   }
 
-  /* ---------------- Tab 4 . Cohort ---------------- */
+  /* ---------------- Tab 5 . Cohort ---------------- */
   function renderCohort(root){
     var d = DATA.cohort;
 
@@ -1568,7 +2048,7 @@ var DATA = {
     root.appendChild(h("p",{class:"season-strip"}, d.cadence));
   }
 
-  /* ---------------- Tab 5 . Crew ---------------- */
+  /* ---------------- Tab 6 . Crew ---------------- */
   function renderCrew(root){
     DATA.crew.groups.forEach(function(g){
       root.appendChild(sect(g.title, g.sub));
@@ -1586,7 +2066,7 @@ var DATA = {
     });
   }
 
-  /* ---------------- Tab 6 . Cultists ---------------- */
+  /* ---------------- Tab 7 . Cultists ---------------- */
   function hoodGlyph(x, y, s, opts){
     /* a simple hooded-figure arch: rounded hood, flat hem */
     var g = hs("g",null);
@@ -1609,14 +2089,15 @@ var DATA = {
     root.appendChild(h("p",{class:"cult-head"}, d.head));
     root.appendChild(h("p",{class:"cult-title"}, d.title));
     root.appendChild(h("p",{class:"cult-law"}, d.law));
+    root.appendChild(h("p",{class:"cult-law"}, d.grammar, " ", h("span",{class:"draft"},"Clue Meters . Draft")));
     root.appendChild(h("p",{class:"cult-status"}, d.status));
 
-    var W = 480, H = 446, cx = 240, cy = 196;
+    var W = 480, H = 556, cx = 240, cy = 84;
     var litNames = d.ring.filter(function(n){return n.lit;}).map(function(n){return n.name;}).join(", ");
     var svg = hs("svg",{class:"web",viewBox:"0 0 "+W+" "+H,role:"img",
-      "aria-label":"The web of the Flame. Center: a large masked hooded figure, "+d.center.name+", the "+d.center.sub+
-      ". Around it: "+d.ring.map(function(n){return n.name;}).join(", ")+
-      ", with "+d.unknown+" unknown masked nodes on the upper spokes. Lit wires: "+litNames+"."});
+      "aria-label":"The web of the Flame. At the top center: a large masked hooded figure, "+d.center.name+", the "+d.center.sub+
+      ". Hanging beneath on thin crimson wires: "+d.ring.map(function(n){return n.name;}).join(", ")+
+      ", then "+d.unknown+" unknown hooded nodes on the lowest row. Each hood carries a clue meter reading clues zero of three. Lit wires: "+litNames+"."});
 
     var defs = hs("defs",null);
     var grad = hs("radialGradient",{id:"glowG"});
@@ -1625,49 +2106,61 @@ var DATA = {
     defs.appendChild(grad);
     svg.appendChild(defs);
 
-    var ringPos = [
-      {x: 66, y:170}, /* OCEAN */
-      {x: 92, y:298}, /* JEWELL */
-      {x:178, y:352}, /* VARET SESSIONS */
-      {x:302, y:352}, /* GILLIAN */
-      {x:388, y:298}, /* SHOVAL */
-      {x:414, y:170}  /* XEHRA */
-    ];
-    var unkPos = [{x:146,y:74},{x:240,y:48},{x:334,y:74}];
+    /* the branch: sage at center-top, two rows of named hoods, unknowns at the hem */
+    var colX = [88, 240, 392];
+    var rowA = d.ring.slice(0,3).map(function(n,i){ return {n:n, x:colX[i], y:230}; });
+    var rowB = d.ring.slice(3,6).map(function(n,i){ return {n:n, x:colX[i], y:372}; });
+    var unkPos = colX.map(function(x){ return {x:x, y:498}; });
 
-    function spoke(px, py, lit){
-      var dx = px-cx, dy = py-cy, len = Math.sqrt(dx*dx+dy*dy);
-      var ux = dx/len, uy = dy/len;
-      var x1 = cx+ux*40, y1 = cy+uy*40, x2 = px-ux*20, y2 = py-uy*20;
+    function wire(x1,y1,x2,y2,lit){
       svg.appendChild(hs("line",{x1:x1,y1:y1,x2:x2,y2:y2,
-        stroke:"#E8DCC0","stroke-opacity": lit? "0.55":"0.16","stroke-width": lit? "1.4":"1"}));
+        stroke:"#C4736B","stroke-opacity": lit ? "0.85":"0.28","stroke-width": lit ? "1.5":"1"}));
+    }
+    /* wires first, under the nodes: sage to row A, A to B, B to the unknowns */
+    rowA.forEach(function(p){ wire(cx, 150, p.x, p.y-36, !!p.n.lit); });
+    rowB.forEach(function(p,i){ wire(rowA[i].x, rowA[i].y+64, p.x, p.y-36, !!p.n.lit); });
+    unkPos.forEach(function(p,i){ wire(rowB[i].x, rowB[i].y+64, p.x, p.y-30, false); });
+
+    function svgClue(x, y){
+      var g = hs("g",null);
+      [-13,0,13].forEach(function(dx){
+        g.appendChild(hs("rect",{x:x+dx-2.5,y:y-2.5,width:5,height:5,
+          transform:"rotate(45 "+(x+dx)+" "+y+")",
+          fill:"none",stroke:"#C4736B","stroke-opacity":"0.7","stroke-width":"1"}));
+      });
+      g.appendChild(hs("text",{x:x,y:y+13,"text-anchor":"middle",
+        "font-size":"7","letter-spacing":"1.5",fill:"#C4736B","fill-opacity":"0.9"}, d.clueLine));
+      return g;
     }
 
-    /* spokes first (under the nodes) */
-    d.ring.forEach(function(n,i){ spoke(ringPos[i].x, ringPos[i].y, !!n.lit); });
-    unkPos.forEach(function(p){ spoke(p.x, p.y, false); });
-
-    /* unknown masked nodes */
-    unkPos.forEach(function(p){
-      svg.appendChild(hoodGlyph(p.x, p.y, 1, {stroke:"#E8DCC0",strokeOp:0.30,fill:"#E8DCC0",fillOp:0.03}));
-      svg.appendChild(hs("text",{x:p.x,y:p.y+24,"text-anchor":"middle",
-        "font-size":"9","letter-spacing":"2",fill:"#9AA0B4"},"??"));
-    });
-
-    /* ring nodes */
-    d.ring.forEach(function(n,i){
-      var p = ringPos[i];
+    function namedNode(p){
+      var n = p.n;
       if (n.lit) svg.appendChild(hs("circle",{cx:p.x,cy:p.y,r:24,fill:"url(#glowG)"}));
       svg.appendChild(hoodGlyph(p.x, p.y, 1.05, n.lit
         ? {stroke:"#E0C084",strokeOp:0.95,fill:"#E0C084",fillOp:0.16,w:1.3}
         : {stroke:"#E8DCC0",strokeOp:0.55,fill:"#E8DCC0",fillOp:0.06}));
       svg.appendChild(hs("text",{x:p.x,y:p.y+26,"text-anchor":"middle",
         "font-size":"10","letter-spacing":"2",fill: n.lit ? "#E0C084":"#E8DCC0"}, n.name));
-      if (n.tag) svg.appendChild(hs("text",{x:p.x,y:p.y+39,"text-anchor":"middle",
-        "font-size":"8","font-style":"italic",fill:"#9AA0B4"}, n.tag));
+      var clueY = p.y + 38;
+      if (n.tag){
+        svg.appendChild(hs("text",{x:p.x,y:p.y+38,"text-anchor":"middle",
+          "font-size":"8","font-style":"italic",fill:"#9AA0B4"}, n.tag));
+        clueY = p.y + 50;
+      }
+      svg.appendChild(svgClue(p.x, clueY));
+    }
+    rowA.forEach(namedNode);
+    rowB.forEach(namedNode);
+
+    /* unknown masked nodes at the hem */
+    unkPos.forEach(function(p){
+      svg.appendChild(hoodGlyph(p.x, p.y, 1, {stroke:"#E8DCC0",strokeOp:0.30,fill:"#E8DCC0",fillOp:0.03}));
+      svg.appendChild(hs("text",{x:p.x,y:p.y+24,"text-anchor":"middle",
+        "font-size":"9","letter-spacing":"2",fill:"#9AA0B4"},"??"));
+      svg.appendChild(svgClue(p.x, p.y+36));
     });
 
-    /* center: the Sage */
+    /* the Sage, center-top of the web */
     svg.appendChild(hs("circle",{cx:cx,cy:cy,r:52,fill:"url(#glowG)"}));
     svg.appendChild(hoodGlyph(cx, cy, 2.7, {stroke:"#E0C084",strokeOp:0.9,fill:"#2A0D12",fillOp:0.9,w:1.6}));
     svg.appendChild(hs("path",{d:"M "+cx+" "+(cy+2)+" L "+(cx+5)+" "+(cy+7)+" L "+cx+" "+(cy+12)+" L "+(cx-5)+" "+(cy+7)+" Z",
@@ -1685,7 +2178,7 @@ var DATA = {
       h("b",null,d.plaque.title), d.plaque.line));
   }
 
-  /* ---------------- Tab 7 . Loadouts ---------------- */
+  /* ---------------- Tab 8 . Loadouts ---------------- */
   function renderLoadouts(root){
     var d = DATA.loadouts;
     root.appendChild(h("p",{class:"badge-row"}, draftBadge()));
@@ -1722,9 +2215,12 @@ var DATA = {
     root.appendChild(h("p",{class:"armory-line"}, d.armory.doctrine));
   }
 
-  /* ---------------- Tab 8 . Library ---------------- */
+  /* ---------------- Tab 9 . Library ---------------- */
   function renderLibrary(root){
     var d = DATA.library;
+
+    root.appendChild(h("div",{class:"law",style:"margin:0 auto var(--s6)"},
+      h("b",null,d.audit.title), d.audit.line));
 
     root.appendChild(sect("The Faculty Shelves","seven chairs, doctrine on the boards"));
     root.appendChild(h("div",{class:"lib-grid"}, d.faculty.map(function(f){
@@ -1739,11 +2235,6 @@ var DATA = {
         f.note ? h("p",{class:"f-note"}, f.note) : null,
         f.sign ? h("p",{class:"f-sign"}, f.sign) : null
       );
-    })));
-
-    root.appendChild(sect("The Lexicon","nine terms"));
-    root.appendChild(h("div",{class:"lex-grid"}, d.lexicon.map(function(x){
-      return h("p",{class:"lex"}, h("b",null,x.t), " . ", h("span",null,x.d));
     })));
 
     root.appendChild(sect("The Three Lineages"));
@@ -1781,6 +2272,7 @@ var DATA = {
   var mounts = {
     "panel-odyssey": renderOdyssey,
     "panel-abilities": renderAbilities,
+    "panel-database": renderDatabase,
     "panel-score": renderScore,
     "panel-cohort": renderCohort,
     "panel-crew": renderCrew,
@@ -1793,6 +2285,7 @@ var DATA = {
   var tints = {
     "tab-odyssey":"tint-odyssey",
     "tab-abilities":"tint-abilities",
+    "tab-database":"tint-database",
     "tab-score":"tint-score",
     "tab-cohort":"tint-cohort",
     "tab-crew":"tint-crew",
