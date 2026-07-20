@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0B1220">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Maze Codex . Probe v0.6</title>
+<style>
+  :root{
+    --gold:#C9A46A;
+    --gold2:#C8A95E;
+    --gold-bright:#E0C084;
+    --gold-25:rgba(201,164,106,.25);
+    --gold-40:rgba(201,164,106,.40);
+    --gold-12:rgba(201,164,106,.12);
+    --parch:#E8DCC0;
+    --parch-dim:#C9BFA6;
+    --muted:#9AA0B4;
+    --teal:#7FB0AB;
+    --red:#C4736B;
+    --green:#7FAF8C;
+    --blue:#7B96C9;
+    --hair:rgba(201,164,106,.28);
+    --card:rgba(8,8,18,.42);
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+    --serif:Georgia,"Times New Roman",Times,serif;
+  }
+
+  /* per-tab tint colors, registered so they crossfade */
+  @property --bg-a { syntax:'<color>'; inherits:true; initial-value:#0A0C22; }
+  @property --bg-b { syntax:'<color>'; inherits:true; initial-value:#121740; }
+  @property --bg-c { syntax:'<color>'; inherits:true; initial-value:#1A2050; }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--serif);
+    --bg-a:#0A0C22; --bg-b:#121740; --bg-c:#1A2050;
+    background:
+      radial-gradient(120% 90% at 50% 0%, var(--bg-c) 0%, var(--bg-b) 45%, var(--bg-a) 100%);
+    background-attachment:fixed;
+    color:var(--parch);
+    font-size:15px;
+    line-height:1.55;
+    min-height:100vh;
+    padding-bottom:175px; /* clearance for fixed HUD */
+    transition:--bg-a .9s ease, --bg-b .9s ease, --bg-c .9s ease;
+  }
+  body.tint-odyssey  {--bg-a:#0A0C22;--bg-b:#121740;--bg-c:#1A2050}
+  body.tint-abilities{--bg-a:#0E0924;--bg-b:#1A1042;--bg-c:#241852}
+  body.tint-score    {--bg-a:#06141A;--bg-b:#0C222B;--bg-c:#122E38}
+  body.tint-crew     {--bg-a:#150E07;--bg-b:#20150B;--bg-c:#2A1D10}
+  body.tint-cohort   {--bg-a:#04100A;--bg-b:#0A1F12;--bg-c:#102B1A}
+  body.tint-cultists {--bg-a:#180608;--bg-b:#270C12;--bg-c:#331119}
+  body.tint-loadouts {--bg-a:#110E0A;--bg-b:#1C1610;--bg-c:#251D14}
+  @media (prefers-reduced-motion:reduce){
+    body{transition:none}
+  }
+
+  .wrap{max-width:880px;margin:0 auto;padding:0 var(--s4)}
+  @media (min-width:560px){ .wrap{padding:0 var(--s5)} }
+
+  /* ---------- diamonds ---------- */
+  .dia{
+    display:inline-block;width:7px;height:7px;
+    transform:rotate(45deg);
+    background:var(--gold);
+    flex:none;
+  }
+  .dia.dim{background:transparent;border:1px solid var(--gold-40)}
+  .dia.faint{background:transparent;border:1px solid var(--gold-25)}
+  .dia.red{background:var(--red)}
+  .dia.green{background:var(--green)}
+  .dia.blue{background:var(--blue)}
+
+  /* rung rows: full / half / empty diamonds */
+  .rr{display:inline-flex;gap:7px;align-items:center;height:12px}
+  .rr i{
+    display:inline-block;width:8px;height:8px;flex:none;
+    transform:rotate(45deg);
+    border:1px solid var(--acc-dim,var(--gold-40));
+  }
+  .rr i.f{background:var(--acc,var(--gold));border-color:var(--acc,var(--gold))}
+  .rr i.h{
+    background:linear-gradient(135deg,var(--acc,var(--gold)) 50%,transparent 50%);
+    border-color:var(--acc,var(--gold));
+  }
+  .acc-red  {--acc:#C4736B;--acc-dim:rgba(196,115,107,.45)}
+  .acc-green{--acc:#7FAF8C;--acc-dim:rgba(127,175,140,.45)}
+  .acc-blue {--acc:#7B96C9;--acc-dim:rgba(123,150,201,.45)}
+
+  /* ---------- header ---------- */
+  header{padding-top:var(--s6);text-align:center}
+  .eyebrow{
+    color:var(--gold);font-size:11px;letter-spacing:5px;text-transform:uppercase;
+    display:flex;align-items:center;justify-content:center;gap:var(--s3);
+  }
+  .eyebrow::before,.eyebrow::after{
+    content:"";height:1px;width:36px;
+    background:linear-gradient(90deg,transparent,var(--hair));
+  }
+  .eyebrow::after{background:linear-gradient(90deg,var(--hair),transparent)}
+  h1{
+    margin-top:var(--s3);
+    font-size:26px;font-weight:normal;letter-spacing:6px;text-transform:uppercase;
+    color:var(--parch);
+  }
+  h1 .ver{color:var(--gold);font-size:15px;letter-spacing:3px;vertical-align:middle}
+  .chip{
+    display:inline-block;margin-top:var(--s4);
+    border:1px solid var(--gold-40);
+    padding:5px 14px;
+    font-size:10px;letter-spacing:2px;color:var(--parch-dim);
+  }
+  .chip b{color:var(--gold);font-weight:normal;letter-spacing:3px}
+
+  .draft{
+    display:inline-block;
+    font-size:8.5px;letter-spacing:2px;text-transform:uppercase;
+    border:1px dashed rgba(224,192,132,.55);color:var(--gold-bright);
+    padding:2px 8px;white-space:nowrap;vertical-align:2px;
+  }
+
+  /* ---------- tabs ---------- */
+  .tabs{
+    margin-top:var(--s6);
+    display:flex;justify-content:center;gap:0;flex-wrap:wrap;
+    border-bottom:1px solid rgba(201,164,106,.18);
+  }
+  .tab{
+    appearance:none;background:none;border:none;cursor:pointer;
+    font-family:var(--serif);
+    color:var(--muted);
+    font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+    padding:var(--s3) 10px 13px;
+    position:relative;
+  }
+  @media (min-width:640px){ .tab{font-size:12px;letter-spacing:4px;padding:var(--s3) var(--s4) 14px} }
+  @media (min-width:880px){ .tab{font-size:13px;letter-spacing:5px;padding:var(--s3) 22px 14px} }
+  .tab::after{
+    content:"";position:absolute;left:12%;right:12%;bottom:-1px;height:2px;
+    background:transparent;transition:background .25s ease;
+  }
+  .tab[aria-selected="true"]{color:var(--gold-bright)}
+  .tab[aria-selected="true"]::after{background:var(--gold)}
+  .tab:hover{color:var(--parch)}
+  .tab:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+  @media (prefers-reduced-motion:reduce){ .tab::after{transition:none} }
+
+  .panels{min-height:460px;padding-top:var(--s6)}
+  [role="tabpanel"][hidden]{display:none}
+  [role="tabpanel"]:focus{outline:none}
+
+  /* ---------- section headings ---------- */
+  .sect{
+    display:flex;align-items:center;gap:var(--s3);
+    margin:var(--s7) 0 var(--s5);
+    color:var(--gold);font-size:11px;letter-spacing:4px;text-transform:uppercase;
+  }
+  .sect:first-child{margin-top:0}
+  .sect .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--hair),transparent)}
+  .sect small{color:var(--muted);font-size:9.5px;letter-spacing:2px;text-transform:none;font-style:italic}
+
+  /* ---------- character block ---------- */
+  .char{text-align:center}
+  .char .name{font-size:22px;letter-spacing:5px;text-transform:uppercase;color:var(--parch)}
+  .char .name small{font-size:13px;letter-spacing:2px;color:var(--muted);text-transform:none}
+  .char .lane{margin-top:var(--s2);color:var(--parch-dim);font-size:14px;letter-spacing:1px}
+  .char .phase{
+    margin-top:var(--s2);color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  }
+  .pflag{margin:var(--s6) auto 0;max-width:560px}
+  .pflag .pflag-label{
+    color:var(--gold);font-size:9.5px;letter-spacing:3px;text-transform:uppercase;
+    display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  }
+  .pflag .pflag-text{
+    margin-top:var(--s3);
+    font-style:italic;color:var(--gold-bright);font-size:21px;line-height:1.45;
+    text-shadow:0 0 22px rgba(224,192,132,.28);
+  }
+  .pflag .pflag-tag{
+    display:inline-block;margin-top:var(--s3);
+    font-size:8.5px;letter-spacing:2px;text-transform:uppercase;
+    border:1px solid var(--gold-40);color:var(--gold);padding:2px 8px;
+  }
+  .subflags{margin-top:var(--s5)}
+  .subflag{
+    color:var(--parch-dim);font-size:13.5px;font-style:italic;
+    max-width:520px;margin:var(--s4) auto 0;opacity:.85;
+  }
+  .subflag .sf-label{
+    display:block;font-style:normal;
+    font-size:8.5px;letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:3px;
+  }
+
+  /* ---------- quests ---------- */
+  .quest{padding:var(--s4) 0 var(--s5);border-bottom:1px solid rgba(201,164,106,.14)}
+  .quest:last-child{border-bottom:none}
+  .q-head{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap}
+  .q-head .dia{transform:rotate(45deg) translateY(-1px)}
+  .q-name{color:var(--gold-bright);font-size:16px;letter-spacing:1.5px}
+  .q-tags{display:flex;gap:var(--s2);flex-wrap:wrap}
+  .tag{
+    font-size:9px;letter-spacing:2px;text-transform:uppercase;
+    border:1px solid var(--gold-40);color:var(--gold);
+    padding:2px 8px;white-space:nowrap;
+  }
+  .tag.urgent{border-color:rgba(224,192,132,.7);color:var(--gold-bright)}
+  .tag.fire{border-color:rgba(224,170,110,.75);color:#E7B27A}
+  .tag.blown{border-color:rgba(205,105,95,.75);color:#DB8B80}
+  .q-body{margin-top:var(--s2);padding-left:19px;color:var(--parch-dim);font-size:14px}
+  .q-body .line{margin-top:var(--s1)}
+  .q-note{margin-top:var(--s2);font-size:12.5px;font-style:italic;color:var(--muted)}
+  .q-reward{margin-top:var(--s2);font-size:12.5px;color:var(--muted)}
+  .q-reward b{color:var(--gold);font-weight:normal}
+
+  .qbar{margin-top:var(--s3);max-width:420px}
+  .qbar .track{
+    height:5px;background:rgba(232,220,192,.08);
+    border:1px solid rgba(201,164,106,.22);position:relative;
+  }
+  .qbar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold)}
+  .qbar .qbar-label{margin-top:5px;font-size:11px;letter-spacing:1px;color:var(--muted)}
+
+  .ticks{margin-top:var(--s3);display:grid;gap:6px;max-width:460px}
+  .tick{display:flex;align-items:center;gap:var(--s3);font-size:13.5px}
+  .tick .dia{width:6px;height:6px}
+  .tick .t-name{color:var(--parch)}
+  .tick .t-state{margin-left:auto;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+  .tick .t-state.live{color:var(--teal)}
+  .tick .t-state.owed{color:var(--muted)}
+  .tick .t-sub{font-size:11px;color:var(--muted);font-style:italic}
+
+  /* ---------- maze bank : coin piles ---------- */
+  .piles{display:flex;flex-wrap:wrap;gap:12px 6px;justify-content:center;align-items:flex-end}
+  .pile{display:flex;flex-direction:column;align-items:center;width:70px;text-align:center}
+  .pile svg{display:block}
+  .pile text{font-family:var(--serif)}
+  .pile-name{margin-top:2px;font-variant:small-caps;letter-spacing:1.5px;color:var(--parch);font-size:12px}
+  .pile-dom{font-variant:small-caps;letter-spacing:1px;color:var(--muted);font-size:10px;line-height:1.35}
+  .bank-note{margin-top:var(--s4);text-align:center;font-size:11.5px;font-style:italic;color:var(--muted)}
+  .bank-caps{
+    margin-top:var(--s3);text-align:center;
+    font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--parch-dim);
+  }
+
+  /* ---------- bounties ---------- */
+  .bounties{display:grid;gap:var(--s3)}
+  @media (min-width:560px){ .bounties{grid-template-columns:1fr 1fr} }
+  .bounty{
+    border:1px solid var(--gold-25);background:var(--card);
+    padding:10px 13px;display:flex;gap:10px;align-items:baseline;
+  }
+  .bounty .dia{width:6px;height:6px;transform:rotate(45deg) translateY(-1px)}
+  .bounty .b-name{color:var(--gold-bright);font-size:13px;letter-spacing:1.5px}
+  .bounty .b-line{display:block;color:var(--parch-dim);font-size:12px;margin-top:2px}
+
+  /* ---------- abilities: spear + season ---------- */
+  .badge-row{text-align:center;margin-bottom:var(--s4)}
+  .spear{
+    border:1px solid var(--gold-40);background:var(--card);
+    max-width:640px;margin:0 auto;padding:var(--s4) var(--s5);
+    display:flex;gap:var(--s4);align-items:center;
+  }
+  .spear svg{flex:none}
+  .spear .sp-label{color:var(--gold);font-size:9.5px;letter-spacing:3px;text-transform:uppercase}
+  .spear .sp-title{color:var(--parch);font-size:16px;font-style:italic;margin-top:2px}
+  .spear .sp-line{color:var(--muted);font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;margin-top:6px;line-height:1.7}
+  .season-strip{
+    margin:var(--s5) auto 0;max-width:640px;text-align:center;
+    border-top:1px solid var(--gold-12);border-bottom:1px solid var(--gold-12);
+    padding:var(--s2) var(--s3);
+    color:var(--parch-dim);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;line-height:1.9;
+  }
+
+  /* ---------- abilities: forest ---------- */
+  .chips{display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:center;margin:var(--s6) 0 var(--s5)}
+  .chipbtn{
+    appearance:none;cursor:pointer;background:none;font-family:var(--serif);
+    border:1px solid var(--gold-25);color:var(--parch-dim);
+    padding:8px 13px;display:flex;align-items:center;gap:9px;
+    font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  }
+  .chipbtn small{font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:none}
+  .chipbtn[aria-pressed="true"]{
+    border-color:var(--gold);color:var(--gold-bright);background:rgba(201,164,106,.07);
+  }
+  .chipbtn:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+
+  .forest{display:grid;gap:var(--s7);margin-top:var(--s5)}
+  @media (max-width:979.98px){
+    .forest .tree:not(.active){display:none}
+  }
+  @media (min-width:980px){
+    .chips{display:none}
+    .forest{grid-template-columns:repeat(3,1fr);gap:var(--s5)}
+  }
+
+  .tree-head{
+    display:flex;align-items:center;justify-content:center;gap:var(--s2);
+    margin-bottom:var(--s2);
+  }
+  .tree-head .t-name{color:var(--gold);font-size:12px;letter-spacing:4px;text-transform:uppercase}
+  .tree-count{text-align:center;color:var(--muted);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;margin-bottom:var(--s4)}
+
+  .tgrove{position:relative;padding:6px 0 2px}
+  .tgrove::before{ /* the trunk */
+    content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,var(--acc-dim,var(--gold-25)),rgba(201,164,106,.08));
+  }
+  .bcard{
+    position:relative;width:86%;
+    border:1px solid rgba(201,164,106,.22);background:rgba(8,8,18,.55);
+    padding:10px 13px;margin-bottom:13px;
+  }
+  .bcard.L{margin-right:auto}
+  .bcard.R{margin-left:auto}
+  .bcard .b-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .bcard .b-name{color:var(--parch);font-size:14px;letter-spacing:.5px}
+  .bcard .b-epi{
+    display:block;margin-top:1px;
+    font-variant:small-caps;letter-spacing:1.5px;
+    color:var(--gold);opacity:.85;font-size:11.5px;
+  }
+  .bcard .b-row{display:flex;align-items:center;gap:10px;margin-top:7px;flex-wrap:wrap}
+  .bcard .b-pos{font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .bcard .b-note{margin-top:5px;font-size:11.5px;font-style:italic;color:var(--muted)}
+
+  .bcard.nextcard{
+    width:92%;margin:2px auto 0;text-align:center;
+    border-color:rgba(224,192,132,.55);
+  }
+  .nextcard .n-dia{
+    display:inline-block;width:9px;height:9px;transform:rotate(45deg);
+    background:transparent;border:1px solid var(--gold-bright);
+    box-shadow:0 0 8px 2px rgba(224,192,132,.35);
+    animation:pulse 2.4s ease-in-out infinite;
+    margin-bottom:6px;
+  }
+  .nextcard .b-name{color:var(--gold-bright)}
+  .next-tag{
+    font-size:8.5px;letter-spacing:2px;color:var(--gold-bright);
+    border:1px solid rgba(224,192,132,.5);padding:1px 6px;margin-left:8px;
+    text-transform:uppercase;vertical-align:2px;white-space:nowrap;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 4px 1px rgba(224,192,132,.20)}
+    50%{box-shadow:0 0 12px 4px rgba(224,192,132,.45)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .nextcard .n-dia{animation:none;box-shadow:0 0 8px 2px rgba(224,192,132,.35)}
+  }
+
+  /* ---------- score ---------- */
+  .score-head{text-align:center}
+  .score-head .sh-title{font-size:20px;letter-spacing:5px;text-transform:uppercase;color:var(--parch)}
+  .score-head .sh-sub{margin-top:var(--s2);color:var(--gold);font-style:italic;font-size:15px}
+  .score-head .sh-desc{margin:var(--s3) auto 0;max-width:540px;color:var(--muted);font-size:13px;font-style:italic}
+  .worlds{display:grid;gap:var(--s4);margin-top:var(--s6)}
+  @media (min-width:760px){
+    .worlds{grid-template-columns:1fr 1fr}
+    .worlds .world:last-child{grid-column:1/-1;max-width:60%;margin:0 auto;width:100%}
+  }
+  .world{
+    border:1px solid var(--gold-25);background:var(--card);
+    padding:var(--s4) var(--s4) var(--s4) var(--s4);
+    display:flex;gap:var(--s4);
+  }
+  .w-letter{
+    flex:none;width:44px;height:44px;transform:rotate(45deg);margin:6px 8px 0 4px;
+    border:1px solid var(--gold-40);display:flex;align-items:center;justify-content:center;
+  }
+  .w-letter span{transform:rotate(-45deg);color:var(--gold-bright);font-size:20px}
+  .w-body{min-width:0}
+  .w-name{color:var(--parch);font-size:15px;letter-spacing:3px;text-transform:uppercase}
+  .w-renamed{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-left:8px}
+  .w-lineage{
+    margin-top:2px;font-variant:small-caps;letter-spacing:1.2px;
+    color:var(--gold);opacity:.8;font-size:11.5px;
+  }
+  .ladder{display:flex;gap:18px;margin-top:var(--s3);align-items:flex-start}
+  .lstep{text-align:center;width:40px}
+  .lstep .rr{height:10px}
+  .lstep b{
+    display:block;font-weight:normal;font-size:7.5px;letter-spacing:1.2px;
+    text-transform:uppercase;color:var(--muted);margin-top:6px;
+  }
+  .l-label{font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--parch-dim);margin-top:6px}
+  .w-status{margin-top:var(--s2);font-size:12.5px;font-style:italic;color:var(--parch-dim)}
+  .score-doctrine{margin-top:var(--s4);text-align:center;color:var(--muted);font-size:11px;font-style:italic;letter-spacing:.5px}
+
+  /* ---------- crew ---------- */
+  .crew{display:grid;gap:var(--s3)}
+  @media (min-width:560px){ .crew{grid-template-columns:1fr 1fr} }
+  .cnode{
+    display:flex;gap:var(--s3);align-items:baseline;
+    border:1px solid rgba(201,164,106,.18);background:var(--card);
+    padding:9px 13px;
+  }
+  .cnode .dia{width:6px;height:6px;transform:rotate(45deg) translateY(-1px)}
+  .cnode .c-name{color:var(--gold-bright);font-size:13px;letter-spacing:2px;text-transform:uppercase}
+  .cnode .c-role{color:var(--parch);font-size:12.5px}
+  .cnode .c-standing{display:block;color:var(--parch-dim);font-size:11.5px;font-style:italic;margin-top:1px}
+  .cnode .c-voice{
+    display:block;margin-top:2px;
+    font-variant:small-caps;letter-spacing:1.5px;color:var(--muted);font-size:10.5px;
+  }
+  .cnode.faded{opacity:.4}
+
+  /* ---------- cultists ---------- */
+  .cult-head{
+    text-align:center;
+    font-variant:small-caps;letter-spacing:4px;color:var(--gold);font-size:13px;
+  }
+  .cult-title{text-align:center;font-size:21px;letter-spacing:1px;color:var(--parch);margin-top:var(--s2);font-style:italic}
+  .cult-law{
+    margin-top:var(--s3);text-align:center;
+    color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;line-height:1.9;
+  }
+  .cult-status{
+    margin:var(--s5) auto 0;max-width:520px;
+    border:1px solid rgba(201,164,106,.30);
+    padding:var(--s2) var(--s3);text-align:center;
+    color:var(--parch-dim);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  }
+  .web{max-width:540px;margin:var(--s4) auto 0;display:block}
+  .web text{font-family:var(--serif)}
+  .law{
+    max-width:460px;margin:var(--s5) auto 0;
+    border:1px solid var(--gold-25);padding:var(--s3) var(--s4);
+    text-align:center;font-size:12px;letter-spacing:1.5px;color:var(--parch-dim);
+  }
+  .law b{color:var(--gold);font-weight:normal;letter-spacing:3px;text-transform:uppercase;font-size:10px;display:block;margin-bottom:4px}
+
+  /* ---------- loadouts ---------- */
+  .lo-head{text-align:center}
+  .lo-head .lo-title{font-size:20px;letter-spacing:5px;text-transform:uppercase;color:var(--parch)}
+  .lo-head .lo-sub{margin-top:var(--s2);color:var(--gold);font-style:italic;font-size:14px}
+  .lcards{display:grid;gap:var(--s4);margin-top:var(--s6)}
+  @media (min-width:760px){ .lcards{grid-template-columns:1fr 1fr} }
+  .lcard{
+    border:1px solid var(--gold-25);background:var(--card);
+    padding:var(--s4);position:relative;
+  }
+  .lcard .l-num{
+    color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;
+  }
+  .lcard .l-name{color:var(--gold-bright);font-size:15px;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+  .lcard .l-kit{margin-top:6px;color:var(--parch-dim);font-size:13px}
+  .lcard .l-quote{margin-top:6px;color:var(--muted);font-size:12px;font-style:italic}
+  .lcard.locked{opacity:.5}
+  .lockdia{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:13px;height:13px;transform:rotate(45deg);
+    border:1px solid var(--gold);flex:none;
+  }
+  .lockdia i{display:block;width:5px;height:5px;background:var(--gold)}
+  .lcard.live-rig{border-color:rgba(127,176,171,.55)}
+  .lcard.live-rig .l-num{color:var(--teal)}
+  @media (min-width:760px){ .lcard.live-rig{grid-column:1/-1;max-width:60%;margin:0 auto;width:100%} }
+
+  .rail{display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center}
+  .tier{
+    border:1px solid var(--gold-25);color:var(--parch-dim);
+    font-variant:small-caps;letter-spacing:1.5px;font-size:11px;
+    padding:4px 10px;display:flex;align-items:center;gap:8px;
+  }
+  .tier b{color:var(--gold);font-weight:normal}
+  .tier.ghost{border-style:dashed;color:var(--muted);opacity:.7}
+  .armory-line{margin-top:var(--s4);text-align:center;color:var(--muted);font-size:11.5px;font-style:italic}
+
+  /* ---------- the one day (odyssey top strip) ---------- */
+  .oneday-wrap{margin-bottom:var(--s7)}
+  .oneday{display:grid;gap:var(--s3)}
+  @media (min-width:640px){ .oneday{grid-template-columns:1fr 1.25fr 1fr;align-items:stretch} }
+  .od-slot{border:1px solid var(--gold-25);background:var(--card);padding:10px 13px;min-width:0}
+  .od-label{display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted)}
+  .od-label .dia{width:5px;height:5px}
+  .od-text{margin-top:6px;font-size:12px;color:var(--parch-dim);line-height:1.5}
+  .od-sub{margin-top:5px;font-size:11px;font-style:italic;color:var(--muted)}
+  .od-slot.dumpish{opacity:.72}
+  .od-slot.dumpish .od-text{color:var(--muted)}
+  .od-slot.anchor{border-color:rgba(224,192,132,.6)}
+  .od-slot.anchor .od-label{color:var(--gold)}
+  .od-slot.anchor .od-text{color:var(--gold-bright);font-size:13.5px}
+  .od-caption{margin-top:var(--s3);text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+
+  /* sprint-type tags on quest board items */
+  .sprint{font-variant:small-caps;letter-spacing:1.5px;color:var(--muted);font-size:10.5px;white-space:nowrap;opacity:.85}
+
+  /* ---------- cohort ---------- */
+  .co-head{text-align:center}
+  .co-title{font-size:20px;letter-spacing:5px;text-transform:uppercase;color:var(--parch)}
+  .co-sub{margin-top:var(--s2);color:var(--parch-dim);font-size:10.5px;letter-spacing:2px;text-transform:uppercase}
+  .co-dream{margin-top:var(--s3);color:var(--gold-bright);font-style:italic;font-size:16px}
+  .co-chip{display:inline-block;margin-top:var(--s3);border:1px solid var(--gold-40);padding:4px 12px;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--parch-dim)}
+
+  .prail-bands{display:flex;gap:var(--s2)}
+  .pband{border:1px solid var(--gold-25);background:var(--card);padding:8px 10px;text-align:center;min-width:0}
+  .pband.gen{flex:4}
+  .pband.fin{flex:3}
+  .pb-name{color:var(--gold);font-size:10px;letter-spacing:3px;text-transform:uppercase}
+  .pb-stages{margin-top:4px;color:var(--parch-dim);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;line-height:1.7}
+  .ptrack{position:relative;margin-top:var(--s4);height:1px;background:linear-gradient(90deg,var(--gold-25),var(--gold-40),var(--gold-25))}
+  .ptoday{position:absolute;left:22.2%;top:-4px;width:9px;height:9px;transform:translateX(-50%) rotate(45deg);background:var(--gold-bright);box-shadow:0 0 10px 2px rgba(224,192,132,.45)}
+  .ptoday-label{position:absolute;left:22.2%;top:10px;transform:translateX(-50%);font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-bright);white-space:nowrap}
+  .prail-foot{margin-top:32px;text-align:center;color:var(--muted);font-size:10.5px;font-style:italic}
+
+  .stages{border-top:1px solid rgba(201,164,106,.14)}
+  .stage{border-bottom:1px solid rgba(201,164,106,.14)}
+  .stage-h{font-size:inherit;font-weight:normal;margin:0}
+  .stage-btn{
+    appearance:none;background:none;border:none;cursor:pointer;font-family:var(--serif);
+    width:100%;text-align:left;display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;
+    padding:12px 4px;color:var(--parch);
+  }
+  .stage-btn:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+  .stage-btn .dia{transform:rotate(45deg) translateY(-1px)}
+  .s-name{color:var(--gold-bright);font-size:14px;letter-spacing:3px;text-transform:uppercase}
+  .s-chip{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--gold-25);color:var(--muted);padding:2px 8px;white-space:nowrap}
+  .s-chip.done{color:var(--gold);border-color:var(--gold-40)}
+  .s-chip.now{color:var(--gold-bright);border-color:rgba(224,192,132,.7);box-shadow:0 0 8px rgba(224,192,132,.3)}
+  .s-chip.next{color:var(--parch-dim)}
+  .s-chip.ahead{border-style:dashed}
+  .s-note{font-size:11.5px;font-style:italic;color:var(--muted);min-width:0}
+  .s-caret{margin-left:auto;color:var(--gold);font-size:14px;line-height:1}
+  .stage-body{padding:0 4px var(--s4) 21px}
+  .sb-purpose{font-style:italic;color:var(--gold);font-size:13px}
+  .sb-label{margin-top:var(--s3);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted)}
+  .sb-step{margin-top:5px;color:var(--parch-dim);font-size:13px;padding-left:14px;position:relative}
+  .sb-step::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;transform:rotate(45deg);border:1px solid var(--gold-40)}
+  .sb-step.accent{color:#E7B27A;font-style:italic}
+  .sb-step.accent::before{border-color:rgba(224,170,110,.75)}
+  .sb-step.lawline{color:var(--gold);font-variant:small-caps;letter-spacing:1px}
+  .sb-kv{margin-top:var(--s3);font-size:12.5px;color:var(--parch-dim)}
+  .sb-kv b{font-weight:normal;color:var(--gold);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;margin-right:8px}
+
+  .spine{display:flex;flex-wrap:wrap;row-gap:var(--s4);margin-top:var(--s2)}
+  .gate{flex:1 1 76px;min-width:76px;position:relative;text-align:center;padding-top:2px}
+  .gate::before,.gate::after{content:"";position:absolute;top:7px;border-top:1px dotted rgba(201,164,106,.35)}
+  .gate::before{left:0;width:calc(50% - 12px)}
+  .gate::after{right:0;width:calc(50% - 12px)}
+  .g-dia{display:inline-block;width:10px;height:10px;transform:rotate(45deg);border:1px solid var(--gold-25);background:transparent}
+  .gate.passed .g-dia{background:var(--gold);border-color:var(--gold)}
+  .gate.now .g-dia{border-color:var(--gold-bright);box-shadow:0 0 10px 3px rgba(224,192,132,.4);animation:pulse 2.4s ease-in-out infinite}
+  @media (prefers-reduced-motion:reduce){ .gate.now .g-dia{animation:none} }
+  .g-name{display:block;margin-top:7px;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .gate.passed .g-name{color:var(--parch-dim)}
+  .gate.now .g-name{color:var(--gold-bright)}
+  .g-day{display:block;font-size:8px;letter-spacing:1px;color:var(--muted);margin-top:2px}
+  .spine-note{margin-top:var(--s4);text-align:center;font-size:11.5px;font-style:italic;color:var(--parch-dim)}
+  .spine-foot{margin-top:var(--s2);text-align:center;font-size:10.5px;font-style:italic;color:var(--muted)}
+
+  /* ---------- HUD (persistent bottom bar) ---------- */
+  .hud{
+    position:fixed;left:0;right:0;bottom:0;z-index:10;
+    background:linear-gradient(180deg,rgba(9,9,17,.88),rgba(9,9,17,.97));
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    border-top:1px solid var(--hair);
+  }
+  .hud-inner{max-width:880px;margin:0 auto;padding:var(--s3) var(--s4) var(--s2)}
+  @media (min-width:560px){ .hud-inner{padding:var(--s3) var(--s5) var(--s2)} }
+  .hud-row{display:flex;align-items:center;gap:var(--s4)}
+  .level{display:flex;align-items:center;gap:var(--s3);flex:none}
+  .lvl-diamond{
+    width:30px;height:30px;transform:rotate(45deg);
+    border:1px solid var(--gold);background:#14121F;
+    display:flex;align-items:center;justify-content:center;flex:none;
+    margin:4px;
+  }
+  .lvl-diamond span{
+    transform:rotate(-45deg);color:var(--gold-bright);font-size:15px;
+  }
+  .lvl-label{
+    color:var(--gold);font-size:10px;letter-spacing:3px;text-transform:uppercase;
+    line-height:1.3;
+  }
+  .meter{flex:1;min-width:0}
+  .meter-top{
+    display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2);
+    margin-bottom:5px;flex-wrap:wrap;
+  }
+  .meter-name{color:var(--parch-dim);font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase}
+  .meter-note{color:var(--muted);font-size:9px;letter-spacing:1px}
+  .meter .track{
+    position:relative;height:6px;
+    background:rgba(232,220,192,.06);
+    border:1px solid rgba(201,164,106,.25);
+  }
+  .meter .notch{
+    position:absolute;top:-4px;bottom:-4px;width:3px;left:24%;
+    background:var(--gold);
+    box-shadow:0 0 6px 1px rgba(201,164,106,.5);
+  }
+  .meter .notch::after{
+    content:"";position:absolute;left:50%;top:-7px;
+    width:5px;height:5px;transform:translateX(-50%) rotate(45deg);
+    background:var(--gold);
+  }
+  .hud-foot{position:relative;margin-top:var(--s3)}
+  .footer-line{
+    text-align:center;
+    color:var(--parch-dim);font-style:italic;font-size:12.5px;letter-spacing:1px;
+  }
+  .sync{
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    color:var(--muted);font-size:8px;letter-spacing:1.8px;text-transform:uppercase;
+  }
+  @media (max-width:480px){
+    .sync{position:static;transform:none;display:block;text-align:right;margin-top:2px}
+  }
+  @media (max-width:420px){
+    .meter-note{display:none}
+    body{padding-bottom:168px}
+  }
+</style>
+</head>
+<body class="tint-odyssey">
+
+<header class="wrap">
+  <p class="eyebrow"><span class="dia" aria-hidden="true"></span> The Maze Codex <span class="dia" aria-hidden="true"></span></p>
+  <h1>Probe <span class="ver">v0.6</span></h1>
+  <p class="chip"><b>SNAPSHOT</b> . 2026-07-20 . fed by session write-backs</p>
+</header>
+
+<nav class="wrap">
+  <div class="tabs" role="tablist" aria-label="Codex screens">
+    <button class="tab" id="tab-odyssey" role="tab" aria-selected="true" aria-controls="panel-odyssey">Odyssey</button>
+    <button class="tab" id="tab-abilities" role="tab" aria-selected="false" aria-controls="panel-abilities" tabindex="-1">Abilities</button>
+    <button class="tab" id="tab-score" role="tab" aria-selected="false" aria-controls="panel-score" tabindex="-1">Score</button>
+    <button class="tab" id="tab-cohort" role="tab" aria-selected="false" aria-controls="panel-cohort" tabindex="-1">Cohort</button>
+    <button class="tab" id="tab-crew" role="tab" aria-selected="false" aria-controls="panel-crew" tabindex="-1">Crew</button>
+    <button class="tab" id="tab-cultists" role="tab" aria-selected="false" aria-controls="panel-cultists" tabindex="-1">Cultists</button>
+    <button class="tab" id="tab-loadouts" role="tab" aria-selected="false" aria-controls="panel-loadouts" tabindex="-1">Loadouts</button>
+  </div>
+</nav>
+
+<main class="wrap panels">
+  <section id="panel-odyssey" role="tabpanel" aria-labelledby="tab-odyssey" tabindex="0"></section>
+  <section id="panel-abilities" role="tabpanel" aria-labelledby="tab-abilities" tabindex="0" hidden></section>
+  <section id="panel-score" role="tabpanel" aria-labelledby="tab-score" tabindex="0" hidden></section>
+  <section id="panel-cohort" role="tabpanel" aria-labelledby="tab-cohort" tabindex="0" hidden></section>
+  <section id="panel-crew" role="tabpanel" aria-labelledby="tab-crew" tabindex="0" hidden></section>
+  <section id="panel-cultists" role="tabpanel" aria-labelledby="tab-cultists" tabindex="0" hidden></section>
+  <section id="panel-loadouts" role="tabpanel" aria-labelledby="tab-loadouts" tabindex="0" hidden></section>
+</main>
+
+<!-- ============ persistent HUD ============ -->
+<div class="hud">
+  <div class="hud-inner">
+    <div class="hud-row">
+      <div class="level">
+        <span class="lvl-diamond" aria-hidden="true"><span>2</span></span>
+        <span class="lvl-label">Phase&nbsp;2</span>
+      </div>
+      <div class="meter">
+        <div class="meter-top">
+          <span class="meter-name">Minutes in the Center</span>
+          <span class="meter-note">one confirmed center . Trenton . 2026-03-28</span>
+        </div>
+        <div class="track" role="img"
+             aria-label="Minutes in the center: the bar is mostly unfilled. One confirmed center event, Trenton, 2026-03-28, marked as a single gold notch.">
+          <span class="notch" title="Trenton . 2026-03-28"></span>
+        </div>
+      </div>
+    </div>
+    <div class="hud-foot">
+      <p class="footer-line">The only input is the work.</p>
+      <span class="sync">Ledger Sync . 07.19</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROBE REFRESH PROTOCOL: sessions update this DATA block from the Notion Codex Ledger and ledger tops, then republish via update_artifact. Do not hand-edit. -->
+<script>
+/* PROBE REFRESH PROTOCOL: sessions update this DATA block from the Notion
+   Codex Ledger and ledger tops, then republish via update_artifact.
+   Do not hand-edit. */
+var DATA = {
+  meta: {
+    snapshot: "2026-07-20",
+    ledgerSync: "07.19",
+    treesBadge: "Trees v2 . Draft . Awaiting Verdicts"
+  },
+
+  odyssey: {
+    name: "Scoots",
+    alias: "Robbie Sko",
+    lane: "The one-man electronic jam band lane",
+    phase: "Phase 2 . The Maze",
+    oneday: {
+      label: "The One Day",
+      note: "Kaizen-informed",
+      slots: [
+        {label:"The Dump", cls:"dumpish",
+         text:"The day starts by emptying, not scheduling. Voice memo the dump; the Codex metabolizes it."},
+        {label:"The Highlight", cls:"anchor",
+         text:"The Forty closes . flows to 40 . due tonight",
+         sub:"if only this gets done, today is a win."},
+        {label:"The Micro", cls:"floor",
+         text:"One two-minute action, chosen fresh: open the template, Save As, play one bar.",
+         sub:"the floor, not the plan . never pre-loaded."}
+      ],
+      caption: "THE ONE DAY . three decisions and a dump . streaks fill from Odyssey rows"
+    },
+    publicFlag: {
+      label: "Public Flag",
+      text: "\"Humanity is still playing.\"",
+      tag: "crowned 7.19"
+    },
+    flag: {
+      label: "The Flag . crowned Jul 6 2026",
+      text: "\"Out of the loop, into the Maze, together.\""
+    },
+    star: {
+      label: "The Architect's Star",
+      text: "\"I design moments where spectators become participants, masks slip, and strangers find each other.\""
+    },
+    quests: [
+      {
+        name: "The Forty",
+        tags: [{t:"Main"},{t:"Urgent",cls:"urgent"}],
+        sprint: "creative deep work",
+        lines: ["10 flow sessions . 40 exported ideas . due TONIGHT"],
+        bar: { pct:37.5, label:"15 of 40 . as of 7.19", aria:"The Forty: 15 of 40 exported ideas" }
+      },
+      {
+        name: "The Friday Ship",
+        tags: [{t:"Main Line"},{t:"Deadline",cls:"urgent"}],
+        sprint: "important work",
+        lines: ["one YouTube video ships by Friday Jul 24"],
+        note: "build window Mon to Thu . the trip starts Sunday 7.26 . the flag flies over it"
+      },
+      {
+        name: "The Threshold of Summer",
+        tags: [{t:"Main Line"}],
+        sprint: "admin hell",
+        lines: ["re-anchored to Aug 2 . CROWNED 7.19"],
+        ticks: [
+          {name:"Day-First Dashboard", sub:"this screen", state:"Alive", live:true},
+          {name:"Daily Export", state:"Live", live:true},
+          {name:"Upload", state:"Owed"},
+          {name:"Song-Feedback", state:"Owed"},
+          {name:"Sunday Review", state:"Owed"}
+        ]
+      },
+      {
+        name: "Music Main Quest . Finish the Album",
+        tags: [{t:"Fire",cls:"fire"}],
+        lines: ["Joyal 90-day cohort . due Sep 29"],
+        note: "Calibrate closed 7.15 . Flow fortnight now . August is Extract"
+      },
+      {
+        name: "Episode One . The Boulder",
+        tags: [{t:"Fire",cls:"fire"}],
+        lines: ["the season contract . lives in Resolve"],
+        reward: "Reward on release: the Order of the Phoenix audiobook"
+      }
+    ],
+    bank: {
+      coins: [
+        {name:"White", domain:"Body and Earth", color:"#E6E1D3", edge:"#8F8A7A", count:1},
+        {name:"Blue",  domain:"Lens",           color:"#7B96C9", edge:"#46587E", count:0},
+        {name:"Green", domain:"Lab-Producer",   color:"#7FAF8C", edge:"#49694F", count:1},
+        {name:"Red",   domain:"Performer",      color:"#C4736B", edge:"#7A413C", count:3},
+        {name:"Black", domain:"Sync and Relation", color:"#23262E", edge:"#0E1015", rim:"#C9A46A", count:2}
+      ],
+      note: "MAZE BANK . last banked day 7.15 . piles fill from Odyssey rows going forward",
+      caps: "Weekly caps . Music 6 . Lens 6 . Realm 4 . Dock 3 . Lab 3 . Forge 2"
+    },
+    bounties: [
+      {name:"Fadr Pro Stems", line:"POSTS TODAY 7.20", sprint:"urgent fires"},
+      {name:"Sunday", line:"Head Trip DJ showcase . rig set"}
+    ],
+    bountiesClosed: "Muse and Landmark closed 7.19 . moving on"
+  },
+
+  abilities: {
+    spear: {
+      label: "The Spear",
+      title: "Episode One: The Awakening",
+      line: "Ships > every branch's ceiling rises . Loadout Wheel 2 opens . The story is the spear"
+    },
+    season: "Season Level 1 . L2 at 15 banked coins . Positions are lifetime . The level is the season",
+    trees: [
+      {
+        id:"performer", name:"Performer", acc:"red",
+        branches:[
+          {name:"Keys", epi:"twenty years don't vanish", rung:4, pos:"rung 4 of 5", note:"active: Reverie with Andrea"},
+          {name:"Drums", epi:"the left-foot project", rung:3.5, pos:"rung 3-4 of 5"},
+          {name:"Guitar", epi:"Dorian is the named gap", rung:2, pos:"rung 2 of 5"},
+          {name:"Bass", epi:"knowledge above the fingers", rung:2.5, pos:"rung 2-3 of 5"},
+          {name:"Live Looping", epi:"loop, then loop in Ableton, then let it loop itself", rung:1.5, pos:"rung 1-2 of 5", note:"stage 3 locked"},
+          {name:"DJ Craft", epi:"trained weekly in the Uproot room", rung:3, pos:"rung 3 of 5"},
+          {name:"Stagecraft", epi:"rung five is the Trenton condition", rung:2.5, pos:"rung 2 of 5 . sparks of 3"},
+          {name:"Stage Recording", epi:"the Zoom begun", rung:1, pos:"rung 1 of 5"}
+        ],
+        next:{name:"Talk Box doubles on Pocket Deep"}
+      },
+      {
+        id:"producer", name:"Producer", acc:"green",
+        branches:[
+          {name:"Genre Fluency", epi:"one ladder per world . lives in the SCORE wing", rung:2.5, pos:"mid . see the Score wing"},
+          {name:"Songcraft & Arrangement", epi:"eight honest bars first", rung:2.5, pos:"rung 2 of 5 . climbing 3"},
+          {name:"Sound Selection", epi:"the Dig", rung:2, pos:"rung 2 of 5"},
+          {name:"FX & Racks", epi:"everything an instrument rack", rung:2.5, pos:"rung 2-3 of 5"},
+          {name:"Mixing", epi:"mono truth first", rung:3, pos:"rung 3 of 5"},
+          {name:"Mastering", epi:"gated until Arrangement 3", rung:1.5, pos:"rung 1-2 of 5", note:"the Biancardi chair now feeds rung 4"},
+          {name:"Workflow & Speed", epi:"the template is the instrument", rung:1.5, pos:"rung 1-2 of 5"},
+          {name:"Own the Source", epi:"unlocks Season Level 5", rung:0.5, pos:"rung 0-1 of 5"}
+        ],
+        next:{name:"The Loud Sketch template", note:"the Biancardi contract"}
+      },
+      {
+        id:"lens", name:"The Lens", acc:"blue",
+        branches:[
+          {name:"Short Form", epi:"phone-first, the cut", rung:2, pos:"rung 2 of 5"},
+          {name:"Long Form", epi:"rung 4 is the Boulder, being climbed", rung:1.5, pos:"rung 1-2 of 5"},
+          {name:"Cinematic Craft", epi:"the 360 identity", rung:2, pos:"rung 2 of 5"},
+          {name:"The Scoreboard", epi:"gauges, never gods", rung:1.5, pos:"rung 1-2 of 5"},
+          {name:"Education But Make It Cool", epi:"teach one true thing", rung:1.5, pos:"rung 1-2 of 5"}
+        ],
+        next:{name:"The Circle Mask", note:"Fusion branch . minted 7.17"}
+      }
+    ]
+  },
+
+  score: {
+    title: "The Score Machine",
+    sub: "\"The Instrument Being Built\"",
+    desc: "One unified template accumulating across five worlds until it plays as a single instrument only he can inhabit.",
+    ladderSteps: ["Study","Imitate","Flip","Original"],
+    worlds: [
+      {letter:"S", name:"Soul", lineage:"Misch, Hiatus Kaiyote, D'Angelo, Anomalie",
+       ladder:2, ladderLabel:"ladder ~2", status:"first Calibrate set built (drums card, 6.23)"},
+      {letter:"C", name:"Club", lineage:"Justice, FKJ, Dom Dolla, Purple Disco Machine",
+       ladder:1.5, ladderLabel:"ladder 1-2", status:"references built"},
+      {letter:"O", name:"Odyssey", lineage:"Djawadi, Rakozy, The Flight, Goransson",
+       ladder:2, ladderLabel:"ladder 2", status:"consciously paused at ~90 percent (VEP deferral). Not abandoned."},
+      {letter:"R", name:"Drums", renamed:"renamed from Rhythm", lineage:"Pendulum, Haywyre, Venjent, CloZee",
+       ladder:1.5, ladderLabel:"ladder 1-2", status:"fire-dancer tempo, 174"},
+      {letter:"E", name:"Ethnos", lineage:"Amanati, Le Trio Joubran, Gurbax, tabla and oud",
+       ladder:1, ladderLabel:"ladder 1", status:"active semester, the longest walk"}
+    ],
+    season: "Calibrate closed 7.15 . Flow fortnight now: The Forty 15/40 . August is Extract . the 20-session Calibrate map named on tape 7.11",
+    doctrine: "SCORE songs over semesters (Continuity Bridge v2)"
+  },
+
+  cohort: {
+    title: "The 90-Day Album",
+    sub: "Joyal's room . started Jul 1 . due Sep 29 . tier: FINAL BOSS",
+    dream: "\"Ableton Synth Wizard DJ Drummer Super Looper\"",
+    chip: "the multiplier rule: double the target . 2x rough compositions in 45 days",
+    rail: {
+      bands: [
+        {name:"Generate", stages:"Calibrate > Flow > Extract > Compose"},
+        {name:"Finish", stages:"Edit > Mix > Master"}
+      ],
+      todayLabel: "TODAY . D20 . Jul 20",
+      foot: "(the course's own phase numbering is not used here; it collides with the show's)"
+    },
+    stages: [
+      {
+        name:"Calibrate", chip:{t:"DONE",cls:"done"}, note:"closed 7.15 by the chair",
+        purpose:"build expressive instruments before making music.",
+        steps:[
+          "Design Your Instrument . reference the Vision influences; choose instrument/plugin/tools; set up and test on a track",
+          "Map Real Time Controls . brainstorm expressiveness; map to MIDI; \"Test - does it feel good to play?\"",
+          "Save As Template . name and colour code; headroom ~-10dB; save as template"
+        ],
+        exit:"a saved DAW template, all four instruments playable, -10dB headroom",
+        target:"18 sessions + second template"
+      },
+      {
+        name:"Flow", chip:{t:"NOW",cls:"now"}, note:"the Forty 15 of 40, due tonight",
+        purpose:"generate raw ideas without judgment.",
+        steps:[
+          "Set a timer for 10 minutes / Open your DAW template / Hit record and play your 4 instruments - capture everything.",
+          {t:"If you're analyzing, editing, or unsure what to do next - stop the session.", cls:"accent"},
+          "Then: save as new project (name + date), export audio, link it.",
+          {t:"Law: no listening back.", cls:"lawline"}
+        ],
+        exit:"exported audio linked",
+        target:"course target 54 ideas (Final Boss) . the cohort's own contract: THE FORTY"
+      },
+      {
+        name:"Extract", chip:{t:"NEXT",cls:"next"}, note:"August",
+        purpose:"find the gold in the raw captures.",
+        steps:[
+          "Listen with fresh ears",
+          "Write the action list . \"Identify golden moments, hooks, and interesting ideas\" . experiments with time estimates . reorder by highest impact least time",
+          "Create variations . inversions, rhythmic shifts, harmonic changes . the experiment list: removing notes, transposing, modifying duplicates, shortening/lengthening, flipping vertically, flipping horizontally, matching another part's rhythm or harmony",
+          "Best ideas onto the timeline"
+        ],
+        exit:"best ideas on the timeline, export linked",
+        target:"18 sessions"
+      },
+      {
+        name:"Compose", chip:{t:"AHEAD",cls:"ahead"},
+        purpose:"shape a full arrangement.",
+        steps:[
+          "Sketch the song shape . \"where's the climax? What are the main hooks? How does energy flow?\" . big brushstrokes",
+          "Build . tension and release, automation, transitions",
+          "Quality check S.O.U.N.D. . \"S - Structure: do the sections flow logically? O - Orchestration: is the instrumentation serving the song? U - Unity: does everything work together? N - Narrative: does it take the listener on an emotional journey? D - Direction: does it align with your artistic vision?\""
+        ],
+        exit:"full arrangement passing S.O.U.N.D.",
+        target:"21 sessions"
+      },
+      {
+        name:"Edit", chip:{t:"AHEAD",cls:"ahead"},
+        purpose:"finalize the production.",
+        steps:[
+          "\"Make 'The List' outside the DAW\" . every problem, specific: \"not 'this feels off' but 'the hi-hat is too busy in the verse'\"",
+          "Prioritize highest impact",
+          "Refine . fix, simplify, cut, re-record",
+          "Final QC",
+          {t:"\"Step away and don't listen back until your next session.\"", cls:"accent"}
+        ],
+        exit:"The List cleared",
+        target:"8 multi-string + 8 flow sessions"
+      },
+      {
+        name:"Mix", chip:{t:"AHEAD",cls:"ahead"},
+        purpose:"balance and place everything.",
+        steps:[
+          "V.I.S.T.A. . \"V - Volume & Frequency . I - Image . S - Space . T - Time . A - Aesthetic: feature what makes this song emotionally unique.\"",
+          "The 7 steps . organize session, set routing and groups, balance levels, process tracks, automation, special effects, reference and finalize"
+        ],
+        exit:"final mix, 24-bit WAV",
+        target:"12 multi-string + 12 extract sessions"
+      },
+      {
+        name:"Master", chip:{t:"AHEAD",cls:"ahead"},
+        purpose:"final polish and sign-off.",
+        steps:[
+          "The chain . \"EQ Subtractive - low end reset / Multi Band Compression - ~1-3dB gain reduction / EQ Additive - warmth and character / Widening - subtle, verify mono / Limiter - set LUFS ceiling without pumping or clipping.\"",
+          "Reference across monitors, headphones, phone, car.",
+          "Dual Vision sign-off . \"Internal - do I feel closure and creative integrity? External - does it hold up across systems and references?\""
+        ],
+        exit:"final WAV, 24-bit, -14 LUFS",
+        target:"16 + 8 compose sessions"
+      }
+    ],
+    spine: {
+      gates: [
+        {name:"Mindset", day:"D7", state:"passed"},
+        {name:"Calibrate", day:"D14", state:"passed"},
+        {name:"Flow", day:"D21", state:"now"},
+        {name:"Extract", day:"D28"},
+        {name:"Compose", day:"D37"},
+        {name:"Edit", day:"D58"},
+        {name:"Mix", day:"D76"},
+        {name:"Master", day:"D86"},
+        {name:"Graduation", day:"D90"}
+      ],
+      note: "GRADUATION D90 . \"send the finished project to alex@metamindmusic.com\"",
+      foot: "day numbers, not dates . the cohort calendar lives in the call notes . pace law: 'continue through the action items at a pace that makes sense for you'"
+    },
+    cadence: "Monday focus session Jul 20 . Joyal at the lake from 7.24, no calls that week, the flow does not stop . Friday slot holds"
+  },
+
+  crew: {
+    groups: [
+      {
+        title:"The Council", sub:"seven seats",
+        kind:"council",
+        members:[
+          {name:"Ford",    role:"The Architect",    voice:"Charles"},
+          {name:"Shade",   role:"The Rift",         voice:"Oxlade"},
+          {name:"Maeve",   role:"The Author",       voice:"Seraphina"},
+          {name:"Nessa",   role:"The Cartographer", voice:"Selina"},
+          {name:"Mira",    role:"The Veil",         voice:"Rhea", standing:"drawn from Yukta"},
+          {name:"Allison", role:"The Wonder",       voice:"Lucy"},
+          {name:"Jay",     role:"The Overflow",     voice:"Charles"}
+        ]
+      },
+      {
+        title:"The Faculty", sub:"chairs",
+        members:[
+          {name:"Craig", role:"The Hands", standing:"armed 6.24 . \"keep pushin\""},
+          {name:"Alexandre Joyal", role:"The Engine", standing:"armed, doctrine crowned"},
+          {name:"Sabrina", role:"The Wins", standing:"guardrailed"},
+          {name:"Andrea", role:"The Ear", standing:"unarmed, Ford holds"},
+          {name:"Lawrence Biancardi", role:"The Mastering Chair", standing:"opened 7.19, unarmed"},
+          {name:"Arne", role:"The Reducer", standing:"corpus pending"},
+          {name:"Robert Benjamin", role:"Containers"},
+          {name:"Goshfather", role:"Legibility"}
+        ]
+      },
+      {
+        title:"Loopbreakers and Peers",
+        members:[
+          {name:"Xehra", standing:"Loopbreaker 001 . rising"},
+          {name:"Rachel", standing:"steady 5 of 5 . closest confidant"},
+          {name:"Goldo", standing:"rising . two active songs . weekly shed"},
+          {name:"Yukta", standing:"warming to rising . the Veil's living origin"},
+          {name:"M Waves", standing:"rising . first UK node"},
+          {name:"Julian", standing:"black-shirt exempt"},
+          {name:"Eddie EWI", standing:"Phase 2 co-pilot"},
+          {name:"Roshane", standing:"mirror node"},
+          {name:"OSA", standing:"Phase 3 candidate"},
+          {name:"Don Darkoe", standing:"the least likely room"},
+          {name:"Sam Mushman", standing:"the Landmark door"},
+          {name:"Michael LaVau", standing:"cohort lyricist"},
+          {name:"Tyler Runham", standing:"cohort peer"}
+        ]
+      },
+      {
+        title:"The Dock", sub:"kept close, never confused",
+        members:[
+          {name:"Jimmy", standing:"The Kicks bandleader"},
+          {name:"Anthony Vera", standing:"the structured stage"},
+          {name:"Tessa", standing:"South Bowl door"},
+          {name:"Lucas", standing:"Doubter by record", faded:true}
+        ]
+      }
+    ]
+  },
+
+  cultists: {
+    head: "The Cult of the Flame",
+    title: "The Tristate Fire-Arts Branch",
+    law: "Won on the feed before the room . In person only . Never a DM",
+    status: "Unmasked 0 / 12 . Clues held 4 . Season 1 . Boss Branch",
+    center: { name:"THE SAGE", sub:"Season 1 Boss" },
+    ring: [
+      {name:"OCEAN", lit:true, tag:"the oldest wire . ten years"},
+      {name:"JEWELL"},
+      {name:"VARET SESSIONS", lit:true},
+      {name:"GILLIAN"},
+      {name:"SHOVAL"},
+      {name:"XEHRA", lit:true}
+    ],
+    unknown: 3,
+    plaque: { title:"Approach Law", line:"in-person network proximity only . never a cold DM" }
+  },
+
+  loadouts: {
+    title: "The Loadout Wheel",
+    sub: "\"wheel 2 opens when the Spear ships.\"",
+    cards: [
+      {num:"Loadout 1", name:"Keytar Bounty Kit", kit:"AX-Edge, eight banks", quote:"\"pays drachmae, capped XP\""},
+      {num:"Loadout 2", name:"The Triple-Decker", kit:"SV-1, XK-1 with Leslie and volume pedals, Reface CS", quote:"candidate: Vince's wedding Sept 19"},
+      {num:"Loadout 3", name:"The Ethnos Satchel", kit:"darbuka, repinique, percussion with DJ pairing"},
+      {num:"Loadout 4", name:"The Sovereign Rig", locked:true, kit:"M5 + Push 3 + nanoKONTROL2 + Touche", quote:"unlock: SAFE course schooled"}
+    ],
+    live: {
+      num:"Live Rig . 7.19 Head Trip DJ showcase",
+      name:"Sunday Rig",
+      kit:"AX-Edge keytar, Reface DS, mobile drum stack, LED lights, wireless, no Ableton"
+    },
+    armory: {
+      tiers: [
+        {n:"0", t:"The Hands", sub:"never locked"},
+        {n:"1", t:"Playback"},
+        {n:"2", t:"Control Surfaces"},
+        {n:"3", t:"DAW"},
+        {n:"4", t:"Flagships"},
+        {n:"5", t:"Houses"},
+        {n:"6", t:"Genre Libraries"},
+        {n:"7", t:"Expression"},
+        {n:"8", t:"The Far Shelf", sub:"Bernard's only research lane"}
+      ],
+      ghost: "Ghost Rack . displayed, unbuyable",
+      doctrine: "documentation unlocks gear: the item appears in a finished, shipped page."
+    }
+  }
+};
+
+/* ============================ render engine ============================ */
+(function(){
+  "use strict";
+  var SVGNS = "http://www.w3.org/2000/svg";
+
+  function h(tag, attrs){
+    var el = document.createElement(tag);
+    if (attrs) for (var k in attrs){
+      if (k === "class") el.className = attrs[k];
+      else el.setAttribute(k, attrs[k]);
+    }
+    for (var i = 2; i < arguments.length; i++){
+      append(el, arguments[i]);
+    }
+    return el;
+  }
+  function append(el, c){
+    if (c === null || c === undefined || c === false) return;
+    if (Array.isArray(c)){ c.forEach(function(x){ append(el, x); }); return; }
+    el.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  }
+  function hs(tag, attrs){
+    var el = document.createElementNS(SVGNS, tag);
+    if (attrs) for (var k in attrs) el.setAttribute(k, attrs[k]);
+    for (var i = 2; i < arguments.length; i++) append(el, arguments[i]);
+    return el;
+  }
+  function dia(cls){ return h("span",{class:"dia"+(cls?" "+cls:""),"aria-hidden":"true"}); }
+  function sect(label, subNote){
+    return h("h2",{class:"sect"}, dia(), " "+label+" ",
+      subNote ? h("small",null,subNote) : null,
+      h("span",{class:"rule","aria-hidden":"true"}));
+  }
+  /* rung row with half-diamond support: val may end in .5 */
+  function rungRow(val, max, ariaLabel){
+    var row = h("span",{class:"rr",role:"img","aria-label":ariaLabel});
+    for (var i = 1; i <= max; i++){
+      var cls = "";
+      if (val >= i) cls = "f";
+      else if (val >= i - 0.5) cls = "h";
+      row.appendChild(h("i", cls ? {class:cls} : null));
+    }
+    return row;
+  }
+  function draftBadge(){ return h("span",{class:"draft"}, DATA.meta.treesBadge); }
+  function starGlyph(size){
+    var s = hs("svg",{width:size,height:size,viewBox:"0 0 24 24","aria-hidden":"true"});
+    s.appendChild(hs("path",{d:"M12 1.5 L14.4 9.6 L22.5 12 L14.4 14.4 L12 22.5 L9.6 14.4 L1.5 12 L9.6 9.6 Z",fill:"#C9A46A"}));
+    s.appendChild(hs("path",{d:"M12 6.5 L13.5 10.5 L17.5 12 L13.5 13.5 L12 17.5 L10.5 13.5 L6.5 12 L10.5 10.5 Z",fill:"#0E0A24"}));
+    return s;
+  }
+  /* a small vertical coin pile: stacked ellipse coins with a slight offset */
+  function coinPile(c){
+    var W = 60, H = 58, cx = 26, baseY = 46, step = 6.5, rx = 15, ry = 5.5;
+    var svg = hs("svg",{width:W,height:H,viewBox:"0 0 "+W+" "+H,role:"img",
+      "aria-label": c.name+" coins: "+c.count+" . "+c.domain+(c.count===0 ? " . empty pile" : "")});
+    var rim = c.rim || "rgba(232,220,192,.55)";
+    if (c.count === 0){
+      /* empty pile: a dim base ring where coins would land */
+      svg.appendChild(hs("ellipse",{cx:cx,cy:baseY,rx:rx,ry:ry,fill:"none",
+        stroke:c.color,"stroke-opacity":"0.45","stroke-width":"1","stroke-dasharray":"3 3"}));
+    } else {
+      for (var i = 0; i < c.count; i++){
+        var x = cx + (i === 0 ? 0 : (i % 2 ? 3 : -2));
+        var y = baseY - i * step;
+        /* coin side wall, then the face on top of it */
+        svg.appendChild(hs("ellipse",{cx:x,cy:y+3,rx:rx,ry:ry,fill:c.edge,
+          stroke:rim,"stroke-opacity":"0.45","stroke-width":"1"}));
+        svg.appendChild(hs("ellipse",{cx:x,cy:y,rx:rx,ry:ry,fill:c.color,
+          stroke:rim,"stroke-width":"1"}));
+        svg.appendChild(hs("ellipse",{cx:x,cy:y,rx:rx-4,ry:ry-2,fill:"none",
+          stroke: c.rim ? "rgba(201,164,106,.5)" : "rgba(10,10,20,.30)","stroke-width":"1"}));
+      }
+    }
+    svg.appendChild(hs("text",{x:52,y:baseY+5,"text-anchor":"end","font-size":"15",
+      fill: c.count === 0 ? "#9AA0B4" : "#E0C084"}, String(c.count)));
+    return svg;
+  }
+
+  /* ---------------- Tab 1 . Odyssey ---------------- */
+  function renderOdyssey(root){
+    var d = DATA.odyssey;
+
+    /* THE ONE DAY . slim three-slot strip above the character block */
+    var od = d.oneday;
+    root.appendChild(h("div",{class:"oneday-wrap"},
+      sect(od.label, od.note),
+      h("div",{class:"oneday"}, od.slots.map(function(s){
+        return h("div",{class:"od-slot "+s.cls},
+          h("p",{class:"od-label"}, dia(s.cls==="anchor" ? "" : "dim"), s.label),
+          h("p",{class:"od-text"}, s.text),
+          s.sub ? h("p",{class:"od-sub"}, s.sub) : null
+        );
+      })),
+      h("p",{class:"od-caption"}, od.caption)
+    ));
+
+    root.appendChild(h("div",{class:"char"},
+      h("p",{class:"name"}, d.name+" ", h("small",null,"("+d.alias+")")),
+      h("p",{class:"lane"}, d.lane),
+      h("p",{class:"phase"}, dia("dim"), " "+d.phase+" ", dia("dim")),
+      h("div",{class:"pflag"},
+        h("p",{class:"pflag-label"}, dia(), " "+d.publicFlag.label+" ", dia()),
+        h("p",{class:"pflag-text"}, d.publicFlag.text),
+        h("span",{class:"pflag-tag"}, d.publicFlag.tag)
+      ),
+      h("div",{class:"subflags"},
+        h("p",{class:"subflag"}, h("span",{class:"sf-label"}, d.flag.label), d.flag.text),
+        h("p",{class:"subflag"}, h("span",{class:"sf-label"}, d.star.label), d.star.text)
+      )
+    ));
+
+    root.appendChild(sect("Quest Board"));
+    d.quests.forEach(function(q){
+      var head = h("div",{class:"q-head"}, dia(q.tags.some(function(t){return t.cls==="blown";}) ? "red" : ""),
+        h("span",{class:"q-name"}, q.name),
+        h("span",{class:"q-tags"}, q.tags.map(function(t){
+          return h("span",{class:"tag"+(t.cls?" "+t.cls:"")}, t.t);
+        })),
+        q.sprint ? h("span",{class:"sprint"}, q.sprint) : null
+      );
+      var body = h("div",{class:"q-body"});
+      (q.lines||[]).forEach(function(ln){ body.appendChild(h("p",{class:"line"},ln)); });
+      if (q.bar){
+        body.appendChild(h("div",{class:"qbar"},
+          h("div",{class:"track",role:"img","aria-label":q.bar.aria},
+            h("span",{class:"fill",style:"width:"+q.bar.pct+"%"})),
+          h("p",{class:"qbar-label"}, q.bar.label)
+        ));
+      }
+      if (q.ticks){
+        body.appendChild(h("div",{class:"ticks"}, q.ticks.map(function(t){
+          return h("div",{class:"tick"},
+            dia(t.live ? "" : "dim"),
+            h("span",{class:"t-name"}, t.name+" ", t.sub ? h("span",{class:"t-sub"},"("+t.sub+")") : null),
+            h("span",{class:"t-state "+(t.live?"live":"owed")}, t.state)
+          );
+        })));
+      }
+      if (q.note) body.appendChild(h("p",{class:"q-note"}, q.note));
+      if (q.reward){
+        var parts = q.reward.split(": ");
+        body.appendChild(h("p",{class:"q-reward"}, parts[0]+": ", h("b",null,parts.slice(1).join(": "))));
+      }
+      root.appendChild(h("article",{class:"quest"}, head, body));
+    });
+
+    root.appendChild(sect("Maze Bank"));
+    root.appendChild(h("div",{class:"piles"}, d.bank.coins.map(function(c){
+      return h("div",{class:"pile"},
+        coinPile(c),
+        h("span",{class:"pile-name"},c.name),
+        h("span",{class:"pile-dom"},c.domain)
+      );
+    })));
+    root.appendChild(h("p",{class:"bank-note"}, d.bank.note));
+    root.appendChild(h("p",{class:"bank-caps"}, d.bank.caps+" ", draftBadge()));
+
+    root.appendChild(sect("The Dock . Open Bounties"));
+    root.appendChild(h("div",{class:"bounties"}, d.bounties.map(function(b){
+      return h("div",{class:"bounty"}, dia(),
+        h("span",null, h("span",{class:"b-name"},b.name), h("span",{class:"b-line"},b.line),
+          b.sprint ? h("span",{class:"sprint",style:"display:block"}, b.sprint) : null));
+    })));
+    root.appendChild(h("p",{class:"bank-note"}, d.bountiesClosed));
+  }
+
+  /* ---------------- Tab 2 . Abilities ---------------- */
+  function renderAbilities(root){
+    var d = DATA.abilities;
+    root.appendChild(h("p",{class:"badge-row"}, draftBadge()));
+    root.appendChild(h("div",{class:"spear"},
+      starGlyph(30),
+      h("div",null,
+        h("p",{class:"sp-label"}, d.spear.label),
+        h("p",{class:"sp-title"}, d.spear.title),
+        h("p",{class:"sp-line"}, d.spear.line)
+      )
+    ));
+    root.appendChild(h("p",{class:"season-strip"}, d.season));
+
+    var chips = h("div",{class:"chips",role:"group","aria-label":"Choose a tree"});
+    var forest = h("div",{class:"forest"});
+    var treeEls = {}, chipEls = {};
+
+    d.trees.forEach(function(t, idx){
+      var accClass = "acc-"+t.acc;
+
+      var chip = h("button",{class:"chipbtn "+accClass,type:"button","aria-pressed": idx===0 ? "true":"false"},
+        dia(t.acc), " "+t.name+" ", h("small",null,t.branches.length+" branches"));
+      chip.addEventListener("click", function(){
+        d.trees.forEach(function(u){
+          chipEls[u.id].setAttribute("aria-pressed", u.id===t.id ? "true":"false");
+          treeEls[u.id].classList.toggle("active", u.id===t.id);
+        });
+      });
+      chipEls[t.id] = chip;
+      chips.appendChild(chip);
+
+      var grove = h("div",{class:"tgrove"});
+      t.branches.forEach(function(b, i){
+        var card = h("div",{class:"bcard "+(i%2===0?"L":"R")},
+          h("div",{class:"b-top"}, h("span",{class:"b-name"},b.name)),
+          h("span",{class:"b-epi"}, b.epi),
+          h("div",{class:"b-row"},
+            rungRow(b.rung, 5, b.name+": "+b.pos),
+            h("span",{class:"b-pos"}, b.pos)
+          ),
+          b.note ? h("p",{class:"b-note"}, b.note) : null
+        );
+        grove.appendChild(card);
+      });
+      grove.appendChild(h("div",{class:"bcard nextcard"},
+        h("span",{class:"n-dia","aria-hidden":"true"}),
+        h("div",{class:"b-top",style:"justify-content:center"},
+          h("span",{class:"b-name"}, t.next.name, h("span",{class:"next-tag"},"Next"))),
+        t.next.note ? h("p",{class:"b-note"}, t.next.note) : null
+      ));
+
+      var tree = h("div",{class:"tree "+accClass+(idx===0?" active":"")},
+        h("div",{class:"tree-head"}, dia(t.acc), h("span",{class:"t-name"},t.name)),
+        h("p",{class:"tree-count"}, t.branches.length+" branches"),
+        grove
+      );
+      treeEls[t.id] = tree;
+      forest.appendChild(tree);
+    });
+
+    root.appendChild(chips);
+    root.appendChild(forest);
+  }
+
+  /* ---------------- Tab 3 . Score ---------------- */
+  function renderScore(root){
+    var d = DATA.score;
+    root.appendChild(h("div",{class:"score-head"},
+      h("p",{class:"sh-title"}, d.title),
+      h("p",{class:"sh-sub"}, d.sub),
+      h("p",{class:"sh-desc"}, d.desc)
+    ));
+
+    root.appendChild(h("div",{class:"worlds"}, d.worlds.map(function(w){
+      var ladder = h("div",{class:"ladder",role:"img",
+        "aria-label": w.name+" Genre Fluency ladder, "+w.ladderLabel+" of 4: "+d.ladderSteps.join(", ")});
+      d.ladderSteps.forEach(function(stepName, i){
+        var v = w.ladder - i; /* >=1 full, >=0.5 half */
+        var cls = v >= 1 ? "f" : (v >= 0.5 ? "h" : "");
+        ladder.appendChild(h("span",{class:"lstep"},
+          h("span",{class:"rr","aria-hidden":"true"}, h("i", cls?{class:cls}:null)),
+          h("b",null,stepName)));
+      });
+      return h("div",{class:"world"},
+        h("span",{class:"w-letter","aria-hidden":"true"}, h("span",null,w.letter)),
+        h("div",{class:"w-body"},
+          h("p",null, h("span",{class:"w-name"}, w.name),
+                      w.renamed ? h("span",{class:"w-renamed"},w.renamed) : null),
+          h("p",{class:"w-lineage"}, w.lineage),
+          ladder,
+          h("p",{class:"l-label"}, w.ladderLabel+" . Study > Imitate > Flip > Original"),
+          h("p",{class:"w-status"}, "status: "+w.status)
+        )
+      );
+    })));
+
+    root.appendChild(h("p",{class:"season-strip"}, d.season));
+    root.appendChild(h("p",{class:"score-doctrine"}, d.doctrine));
+  }
+
+  /* ---------------- Tab 4 . Cohort ---------------- */
+  function renderCohort(root){
+    var d = DATA.cohort;
+
+    root.appendChild(h("div",{class:"co-head"},
+      h("p",{class:"co-title"}, d.title),
+      h("p",{class:"co-sub"}, d.sub),
+      h("p",{class:"co-dream"}, d.dream),
+      h("p",null, h("span",{class:"co-chip"}, d.chip))
+    ));
+
+    /* phase rail: two bands, rendered only as GENERATE and FINISH */
+    root.appendChild(sect("Phase Rail"));
+    root.appendChild(h("div",{class:"prail"},
+      h("div",{class:"prail-bands"}, d.rail.bands.map(function(b,i){
+        return h("div",{class:"pband "+(i===0?"gen":"fin")},
+          h("p",{class:"pb-name"}, b.name),
+          h("p",{class:"pb-stages"}, b.stages));
+      })),
+      h("div",{class:"ptrack",role:"img",
+        "aria-label":"The 90-day rail. Today marker at day 20 of 90, inside the Generate band, near Flow."},
+        h("span",{class:"ptoday","aria-hidden":"true"}),
+        h("span",{class:"ptoday-label","aria-hidden":"true"}, d.rail.todayLabel)),
+      h("p",{class:"prail-foot"}, d.rail.foot)
+    ));
+
+    /* the stage ladder: button+region accordion, each row toggles independently */
+    root.appendChild(sect("The Stage Ladder","tap a stage to open"));
+    var ladder = h("div",{class:"stages"});
+    d.stages.forEach(function(s, i){
+      var bid = "co-stage-btn-"+i, rid = "co-stage-body-"+i;
+
+      var body = h("div",{class:"stage-body",id:rid,role:"region","aria-labelledby":bid},
+        h("p",{class:"sb-purpose"}, s.purpose),
+        h("p",{class:"sb-label"}, "The Steps"),
+        s.steps.map(function(st){
+          var t = typeof st === "string" ? st : st.t;
+          var cls = typeof st === "string" ? "" : " "+st.cls;
+          return h("p",{class:"sb-step"+cls}, t);
+        }),
+        h("p",{class:"sb-kv"}, h("b",null,"Exit"), s.exit),
+        h("p",{class:"sb-kv"}, h("b",null,"Final Boss target"), s.target)
+      );
+      body.hidden = true;
+
+      var caret = h("span",{class:"s-caret","aria-hidden":"true"}, "+");
+      var btn = h("button",{class:"stage-btn",type:"button",id:bid,
+        "aria-expanded":"false","aria-controls":rid},
+        dia(s.chip.cls==="now" ? "" : "dim"),
+        h("span",{class:"s-name"}, s.name),
+        h("span",{class:"s-chip "+s.chip.cls}, s.chip.t),
+        s.note ? h("span",{class:"s-note"}, s.note) : null,
+        caret
+      );
+      btn.addEventListener("click", function(){
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", open ? "false" : "true");
+        body.hidden = open;
+        caret.textContent = open ? "+" : "-";
+      });
+
+      ladder.appendChild(h("div",{class:"stage"},
+        h("h3",{class:"stage-h"}, btn), body));
+    });
+    root.appendChild(ladder);
+
+    /* checkpoint spine */
+    root.appendChild(sect("Checkpoint Spine"));
+    root.appendChild(h("div",{class:"spine"}, d.spine.gates.map(function(g){
+      var state = g.state || "dimmed";
+      return h("div",{class:"gate "+state},
+        h("span",{class:"g-dia",role:"img",
+          "aria-label": g.name+" "+g.day+" . "+(state==="passed"?"passed":(state==="now"?"current":"ahead"))}),
+        h("span",{class:"g-name"}, g.name),
+        h("span",{class:"g-day"}, g.day)
+      );
+    })));
+    root.appendChild(h("p",{class:"spine-note"}, d.spine.note));
+    root.appendChild(h("p",{class:"spine-foot"}, d.spine.foot));
+
+    /* cadence */
+    root.appendChild(h("p",{class:"season-strip"}, d.cadence));
+  }
+
+  /* ---------------- Tab 5 . Crew ---------------- */
+  function renderCrew(root){
+    DATA.crew.groups.forEach(function(g){
+      root.appendChild(sect(g.title, g.sub));
+      root.appendChild(h("div",{class:"crew"}, g.members.map(function(m){
+        return h("div",{class:"cnode"+(m.faded?" faded":"")},
+          dia(m.faded?"dim":""),
+          h("span",null,
+            h("span",{class:"c-name"}, m.name),
+            m.role ? h("span",{class:"c-role"}, " . "+m.role) : null,
+            m.standing ? h("span",{class:"c-standing"}, m.standing) : null,
+            m.voice ? h("span",{class:"c-voice"}, "voice: "+m.voice) : null
+          )
+        );
+      })));
+    });
+  }
+
+  /* ---------------- Tab 6 . Cultists ---------------- */
+  function hoodGlyph(x, y, s, opts){
+    /* a simple hooded-figure arch: rounded hood, flat hem */
+    var g = hs("g",null);
+    var st = opts.stroke, so = opts.strokeOp, fill = opts.fill, fo = opts.fillOp;
+    g.appendChild(hs("path",{
+      d:"M "+(x-9*s)+" "+(y+7*s)+
+        " L "+(x-9*s)+" "+(y+1*s)+
+        " Q "+(x-9*s)+" "+(y-9*s)+" "+x+" "+(y-9*s)+
+        " Q "+(x+9*s)+" "+(y-9*s)+" "+(x+9*s)+" "+(y+1*s)+
+        " L "+(x+9*s)+" "+(y+7*s)+" Z",
+      fill:fill,"fill-opacity":fo,stroke:st,"stroke-opacity":so,"stroke-width":opts.w||1.1}));
+    /* the veil: an empty arc where the face would be */
+    g.appendChild(hs("path",{
+      d:"M "+(x-4.5*s)+" "+(y+2*s)+" Q "+x+" "+(y-3.5*s)+" "+(x+4.5*s)+" "+(y+2*s),
+      fill:"none",stroke:st,"stroke-opacity":Math.min(1,so+0.15),"stroke-width":1}));
+    return g;
+  }
+  function renderCultists(root){
+    var d = DATA.cultists;
+    root.appendChild(h("p",{class:"cult-head"}, d.head));
+    root.appendChild(h("p",{class:"cult-title"}, d.title));
+    root.appendChild(h("p",{class:"cult-law"}, d.law));
+    root.appendChild(h("p",{class:"cult-status"}, d.status));
+
+    var W = 480, H = 446, cx = 240, cy = 196;
+    var litNames = d.ring.filter(function(n){return n.lit;}).map(function(n){return n.name;}).join(", ");
+    var svg = hs("svg",{class:"web",viewBox:"0 0 "+W+" "+H,role:"img",
+      "aria-label":"The web of the Flame. Center: a large masked hooded figure, "+d.center.name+", the "+d.center.sub+
+      ". Around it: "+d.ring.map(function(n){return n.name;}).join(", ")+
+      ", with "+d.unknown+" unknown masked nodes on the upper spokes. Lit wires: "+litNames+"."});
+
+    var defs = hs("defs",null);
+    var grad = hs("radialGradient",{id:"glowG"});
+    grad.appendChild(hs("stop",{offset:"0%","stop-color":"#E0C084","stop-opacity":"0.34"}));
+    grad.appendChild(hs("stop",{offset:"100%","stop-color":"#E0C084","stop-opacity":"0"}));
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+
+    var ringPos = [
+      {x: 66, y:170}, /* OCEAN */
+      {x: 92, y:298}, /* JEWELL */
+      {x:178, y:352}, /* VARET SESSIONS */
+      {x:302, y:352}, /* GILLIAN */
+      {x:388, y:298}, /* SHOVAL */
+      {x:414, y:170}  /* XEHRA */
+    ];
+    var unkPos = [{x:146,y:74},{x:240,y:48},{x:334,y:74}];
+
+    function spoke(px, py, lit){
+      var dx = px-cx, dy = py-cy, len = Math.sqrt(dx*dx+dy*dy);
+      var ux = dx/len, uy = dy/len;
+      var x1 = cx+ux*40, y1 = cy+uy*40, x2 = px-ux*20, y2 = py-uy*20;
+      svg.appendChild(hs("line",{x1:x1,y1:y1,x2:x2,y2:y2,
+        stroke:"#E8DCC0","stroke-opacity": lit? "0.55":"0.16","stroke-width": lit? "1.4":"1"}));
+    }
+
+    /* spokes first (under the nodes) */
+    d.ring.forEach(function(n,i){ spoke(ringPos[i].x, ringPos[i].y, !!n.lit); });
+    unkPos.forEach(function(p){ spoke(p.x, p.y, false); });
+
+    /* unknown masked nodes */
+    unkPos.forEach(function(p){
+      svg.appendChild(hoodGlyph(p.x, p.y, 1, {stroke:"#E8DCC0",strokeOp:0.30,fill:"#E8DCC0",fillOp:0.03}));
+      svg.appendChild(hs("text",{x:p.x,y:p.y+24,"text-anchor":"middle",
+        "font-size":"9","letter-spacing":"2",fill:"#9AA0B4"},"??"));
+    });
+
+    /* ring nodes */
+    d.ring.forEach(function(n,i){
+      var p = ringPos[i];
+      if (n.lit) svg.appendChild(hs("circle",{cx:p.x,cy:p.y,r:24,fill:"url(#glowG)"}));
+      svg.appendChild(hoodGlyph(p.x, p.y, 1.05, n.lit
+        ? {stroke:"#E0C084",strokeOp:0.95,fill:"#E0C084",fillOp:0.16,w:1.3}
+        : {stroke:"#E8DCC0",strokeOp:0.55,fill:"#E8DCC0",fillOp:0.06}));
+      svg.appendChild(hs("text",{x:p.x,y:p.y+26,"text-anchor":"middle",
+        "font-size":"10","letter-spacing":"2",fill: n.lit ? "#E0C084":"#E8DCC0"}, n.name));
+      if (n.tag) svg.appendChild(hs("text",{x:p.x,y:p.y+39,"text-anchor":"middle",
+        "font-size":"8","font-style":"italic",fill:"#9AA0B4"}, n.tag));
+    });
+
+    /* center: the Sage */
+    svg.appendChild(hs("circle",{cx:cx,cy:cy,r:52,fill:"url(#glowG)"}));
+    svg.appendChild(hoodGlyph(cx, cy, 2.7, {stroke:"#E0C084",strokeOp:0.9,fill:"#2A0D12",fillOp:0.9,w:1.6}));
+    svg.appendChild(hs("path",{d:"M "+cx+" "+(cy+2)+" L "+(cx+5)+" "+(cy+7)+" L "+cx+" "+(cy+12)+" L "+(cx-5)+" "+(cy+7)+" Z",
+      fill:"#E0C084","fill-opacity":"0.85"}));
+    svg.appendChild(hs("text",{x:cx,y:cy-34,"text-anchor":"middle",
+      "font-size":"8","letter-spacing":"2.5",fill:"#9AA0B4"},"MASKED"));
+    svg.appendChild(hs("text",{x:cx,y:cy+42,"text-anchor":"middle",
+      "font-size":"15","letter-spacing":"4",fill:"#E0C084"}, d.center.name));
+    svg.appendChild(hs("text",{x:cx,y:cy+58,"text-anchor":"middle",
+      "font-size":"9","letter-spacing":"2",fill:"#9AA0B4"}, d.center.sub.toUpperCase()));
+
+    root.appendChild(svg);
+
+    root.appendChild(h("div",{class:"law"},
+      h("b",null,d.plaque.title), d.plaque.line));
+  }
+
+  /* ---------------- Tab 7 . Loadouts ---------------- */
+  function renderLoadouts(root){
+    var d = DATA.loadouts;
+    root.appendChild(h("p",{class:"badge-row"}, draftBadge()));
+    root.appendChild(h("div",{class:"lo-head"},
+      h("p",{class:"lo-title"}, d.title),
+      h("p",{class:"lo-sub"}, d.sub)
+    ));
+
+    var grid = h("div",{class:"lcards"});
+    d.cards.forEach(function(c){
+      grid.appendChild(h("div",{class:"lcard"+(c.locked?" locked":"")},
+        h("p",{class:"l-num"},
+          c.locked ? h("span",{class:"lockdia","aria-hidden":"true"}, h("i",null)) : dia(),
+          c.num + (c.locked ? " . Locked" : "")),
+        h("p",{class:"l-name"}, c.name),
+        h("p",{class:"l-kit"}, c.kit),
+        c.quote ? h("p",{class:"l-quote"}, c.quote) : null
+      ));
+    });
+    grid.appendChild(h("div",{class:"lcard live-rig"},
+      h("p",{class:"l-num"}, dia(), d.live.num),
+      h("p",{class:"l-name"}, d.live.name),
+      h("p",{class:"l-kit"}, d.live.kit)
+    ));
+    root.appendChild(grid);
+
+    root.appendChild(sect("The Armory"));
+    root.appendChild(h("div",{class:"rail"},
+      d.armory.tiers.map(function(t){
+        return h("span",{class:"tier"}, h("b",null,t.n), t.t + (t.sub ? " . "+t.sub : ""));
+      }),
+      h("span",{class:"tier ghost"}, d.armory.ghost)
+    ));
+    root.appendChild(h("p",{class:"armory-line"}, d.armory.doctrine));
+  }
+
+  /* ---------------- mount + tabs ---------------- */
+  var mounts = {
+    "panel-odyssey": renderOdyssey,
+    "panel-abilities": renderAbilities,
+    "panel-score": renderScore,
+    "panel-cohort": renderCohort,
+    "panel-crew": renderCrew,
+    "panel-cultists": renderCultists,
+    "panel-loadouts": renderLoadouts
+  };
+  for (var id in mounts) mounts[id](document.getElementById(id));
+
+  var tints = {
+    "tab-odyssey":"tint-odyssey",
+    "tab-abilities":"tint-abilities",
+    "tab-score":"tint-score",
+    "tab-cohort":"tint-cohort",
+    "tab-crew":"tint-crew",
+    "tab-cultists":"tint-cultists",
+    "tab-loadouts":"tint-loadouts"
+  };
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  var panels = tabs.map(function(t){ return document.getElementById(t.getAttribute("aria-controls")); });
+
+  function select(i, focus){
+    tabs.forEach(function(t, j){
+      var on = j === i;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      panels[j].hidden = !on;
+    });
+    document.body.className = tints[tabs[i].id];
+    if (focus) tabs[i].focus();
+  }
+
+  tabs.forEach(function(t, i){
+    t.addEventListener("click", function(){ select(i, false); });
+    t.addEventListener("keydown", function(e){
+      var n = null;
+      if (e.key === "ArrowRight") n = (i + 1) % tabs.length;
+      else if (e.key === "ArrowLeft") n = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === "Home") n = 0;
+      else if (e.key === "End") n = tabs.length - 1;
+      if (n !== null){ e.preventDefault(); select(n, true); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
