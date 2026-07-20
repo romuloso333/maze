@@ -2,13 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0B1220">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>Maze Codex . Probe v0.6</title>
+<title>Maze Codex . Probe v0.7</title>
 <style>
   :root{
     --gold:#C9A46A;
@@ -57,6 +53,7 @@
   body.tint-cohort   {--bg-a:#04100A;--bg-b:#0A1F12;--bg-c:#102B1A}
   body.tint-cultists {--bg-a:#180608;--bg-b:#270C12;--bg-c:#331119}
   body.tint-loadouts {--bg-a:#110E0A;--bg-b:#1C1610;--bg-c:#251D14}
+  body.tint-library  {--bg-a:#171006;--bg-b:#251B0C;--bg-c:#332614}
   @media (prefers-reduced-motion:reduce){
     body{transition:none}
   }
@@ -477,6 +474,69 @@
   .tier.ghost{border-style:dashed;color:var(--muted);opacity:.7}
   .armory-line{margin-top:var(--s4);text-align:center;color:var(--muted);font-size:11.5px;font-style:italic}
 
+  /* ---------- library ---------- */
+  .lib-grid{display:grid;gap:var(--s3)}
+  @media (min-width:640px){ .lib-grid{grid-template-columns:1fr 1fr} }
+  .shelf{border:1px solid var(--gold-25);background:var(--card);padding:12px 14px;min-width:0}
+  .shelf .f-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .shelf .f-name{color:var(--gold-bright);font-size:15px;letter-spacing:1px}
+  .shelf .f-epi{font-variant:small-caps;letter-spacing:1.5px;color:var(--gold);opacity:.85;font-size:12px}
+  .shelf .f-status{
+    font-size:8.5px;letter-spacing:2px;text-transform:uppercase;
+    border:1px solid var(--gold-40);color:var(--gold);padding:1px 6px;white-space:nowrap;
+  }
+  .shelf .f-status.pending{border-style:dashed;color:var(--parch-dim)}
+  .shelf .f-cards{margin-top:6px;color:var(--parch-dim);font-size:12px;line-height:1.6}
+  .shelf .f-cards b{
+    font-weight:normal;color:var(--muted);font-size:9px;
+    letter-spacing:2px;text-transform:uppercase;margin-right:6px;
+  }
+  .shelf .f-quote{margin-top:6px;font-style:italic;color:var(--parch);font-size:12.5px}
+  .shelf .f-note{margin-top:3px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .shelf .f-sign{margin-top:4px;font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-style:italic}
+
+  .lex-grid{display:grid;gap:var(--s2)}
+  @media (min-width:640px){ .lex-grid{grid-template-columns:1fr 1fr} }
+  .lex{
+    border:1px solid rgba(201,164,106,.18);background:var(--card);
+    padding:8px 12px;font-size:12.5px;min-width:0;
+  }
+  .lex b{font-weight:normal;color:var(--gold-bright);letter-spacing:.5px}
+  .lex span{color:var(--parch-dim)}
+
+  .lin-grid{display:grid;gap:var(--s3)}
+  @media (min-width:760px){ .lin-grid{grid-template-columns:1fr 1fr 1fr} }
+  .lin-foot{margin-top:var(--s5);text-align:center}
+  .teddy{color:var(--gold-bright);font-style:italic;font-size:15px}
+  .register{margin-top:6px;color:var(--muted);font-size:11.5px;font-style:italic}
+
+  .truths{display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center}
+  .truth{
+    flex:1 1 130px;min-width:0;
+    border:1px solid var(--gold-25);background:var(--card);
+    padding:10px 12px;text-align:center;
+    color:var(--parch);font-size:12.5px;font-style:italic;
+  }
+
+  .loops{display:grid;gap:8px;max-width:640px;margin:0 auto}
+  .loopline{display:flex;align-items:baseline;gap:10px;color:var(--parch-dim);font-size:13px}
+  .loopline .dia{width:5px;height:5px;transform:rotate(45deg) translateY(-1px)}
+  .loopline b{font-weight:normal;color:var(--gold-bright);letter-spacing:.5px}
+
+  .links{display:grid;gap:8px 24px;max-width:680px;margin:0 auto}
+  @media (min-width:640px){ .links{grid-template-columns:1fr 1fr} }
+  .mlink{
+    display:flex;align-items:baseline;gap:10px;min-width:0;
+    color:var(--parch);text-decoration:none;font-size:13.5px;letter-spacing:.5px;
+  }
+  .mlink .dia{width:5px;height:5px;transform:rotate(45deg) translateY(-1px)}
+  .mlink:hover,.mlink:focus-visible{
+    color:var(--gold-bright);
+    text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--gold);
+  }
+  .mlink:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+  .links-foot{margin-top:var(--s4);text-align:center;color:var(--muted);font-size:11.5px;font-style:italic}
+
   /* ---------- the one day (odyssey top strip) ---------- */
   .oneday-wrap{margin-bottom:var(--s7)}
   .oneday{display:grid;gap:var(--s3)}
@@ -627,7 +687,7 @@
 
 <header class="wrap">
   <p class="eyebrow"><span class="dia" aria-hidden="true"></span> The Maze Codex <span class="dia" aria-hidden="true"></span></p>
-  <h1>Probe <span class="ver">v0.6</span></h1>
+  <h1>Probe <span class="ver">v0.7</span></h1>
   <p class="chip"><b>SNAPSHOT</b> . 2026-07-20 . fed by session write-backs</p>
 </header>
 
@@ -640,6 +700,7 @@
     <button class="tab" id="tab-crew" role="tab" aria-selected="false" aria-controls="panel-crew" tabindex="-1">Crew</button>
     <button class="tab" id="tab-cultists" role="tab" aria-selected="false" aria-controls="panel-cultists" tabindex="-1">Cultists</button>
     <button class="tab" id="tab-loadouts" role="tab" aria-selected="false" aria-controls="panel-loadouts" tabindex="-1">Loadouts</button>
+    <button class="tab" id="tab-library" role="tab" aria-selected="false" aria-controls="panel-library" tabindex="-1">Library</button>
   </div>
 </nav>
 
@@ -651,6 +712,7 @@
   <section id="panel-crew" role="tabpanel" aria-labelledby="tab-crew" tabindex="0" hidden></section>
   <section id="panel-cultists" role="tabpanel" aria-labelledby="tab-cultists" tabindex="0" hidden></section>
   <section id="panel-loadouts" role="tabpanel" aria-labelledby="tab-loadouts" tabindex="0" hidden></section>
+  <section id="panel-library" role="tabpanel" aria-labelledby="tab-library" tabindex="0" hidden></section>
 </main>
 
 <!-- ============ persistent HUD ============ -->
@@ -1071,6 +1133,85 @@ var DATA = {
       ],
       ghost: "Ghost Rack . displayed, unbuyable",
       doctrine: "documentation unlocks gear: the item appears in a finished, shipped page."
+    }
+  },
+
+  library: {
+    faculty: [
+      {name:"Craig", epi:"The Hands", status:"armed",
+       cards:["The Orphanage","Creativity in Limitations","Play Create Master","The Safe System","The Johanna Principle"],
+       quote:"\"You've basically built your own personal Splice library. Except it actually sounds like you.\"",
+       sign:"keep pushin"},
+      {name:"Alexandre Joyal", epi:"The Engine", status:"armed, doctrine crowned",
+       cards:["The Marble","Permission to Suck","Be-Do-Have Flip","One Knob Five Worlds","The Sound Sanctuary"],
+       quote:"\"You are not carving the statue today, you are making the marble.\""},
+      {name:"Sabrina Seids", epi:"The Wins", status:"guardrailed",
+       cards:["The Money Shot","No Dead Space","Post for Your Goals","Every Post Is a Test","The Socratic Grader"],
+       quote:"\"Whenever you're placing something, you want to place it in, like, the money shot.\""},
+      {name:"Robert Benjamin", epi:"Containers",
+       cards:["The Filter","The Hooks","The Caption","The Question Hook","The Sound Is Distribution"],
+       quote:"\"For more\" is banned.", note:"the banned CTA law"},
+      {name:"Andrea", epi:"The Ear", status:"unarmed by choice, Ford holds",
+       cards:["Learn the Piece Yourself","The Fifth in Disguise","Flip-It-Around","The Andrea Prescription (crowned)"],
+       quote:"\"How do you teach a thing you do not know yourself.\""},
+      {name:"Lawrence Biancardi", epi:"The Mastering Chair", status:"PENDING", pending:true,
+       cards:["EQ Is Most of Mastering","Crackle Is Free Music Is Theft","Mono Is King","The Loud Sketch Baseline"],
+       quote:"\"As loud as possible without sounding bad, and a human sign-off is the spec.\""},
+      {name:"Arn Andersson", epi:"The Reducer (Evenant)", status:"armed",
+       cards:["One Kick 10000 Times","Finished Not Perfect","The Tap Runs Clear","Big Blocks First"],
+       quote:"\"Perfectionism is simply fear and insecurity in a fancy suit.\""}
+    ],
+    lexicon: [
+      {t:"The Glitch", d:"a rupture that reveals a deeper truth"},
+      {t:"Sync Node", d:"inner myth matches outer reality"},
+      {t:"Memory Bleed", d:"Phase 1 habits interfering with Phase 2 action"},
+      {t:"Fragment", d:"a clue collected before its purpose is known"},
+      {t:"False Reset", d:"a fresh start wearing the old code"},
+      {t:"The Loop Breaker Moment", d:"the workaround bypassed by honest diagnosis"},
+      {t:"Activation Cost", d:"pay the room's entry once, then stay"},
+      {t:"State Triggers", d:"haze, lasers, sub . the environment is instrument"},
+      {t:"The Instrument Being Built", d:"the unified SCORE template, one-of-one"}
+    ],
+    lineages: [
+      {name:"Minoan Knossos", epi:"the Lab",
+       d:"the labrys, the workshop around the sacred tool",
+       q:"\"the same edge severs and sanctifies\""},
+      {name:"Tohono O'odham", epi:"the Maze",
+       d:"I'itoi at the entrance, the path is the sum of a life, the center is presence"},
+      {name:"AC Odyssey", epi:"the OS",
+       d:"quests, trees, factions, legendary gear . the axe he refused to put down"}
+    ],
+    teddy: "\"A maze so complicated, only he could navigate through it.\"",
+    register: "the Westworld register: the mundane becomes mythic; the register is never a productivity app.",
+    truths: {
+      note: "never preached in the show, always underneath",
+      list: ["You are not separate","Fear is the illusion","The mind is a projector, not a camera","The ego is the only real enemy","Everything is connected"]
+    },
+    loopReturns: {
+      mark: "Gemini synthesis, absorbed 7.20",
+      items: [
+        {name:"The Johanna Principle", line:"returned by the loop; already shelved under Craig . the echo confirms the doctrine"},
+        {name:"Entering Chef Mode", line:"the state named from outside . the room is set before the cooking starts"},
+        {name:"The Loud Sketch Baseline", line:"returned loud; already shelved under Biancardi . the sketch carries the spec"}
+      ]
+    },
+    links: {
+      items: [
+        {name:"Maze Codex (Notion)", url:"https://app.notion.com/p/36ceca73144480dab678f5a1cb0a1423"},
+        {name:"The Cradle / Canon", url:"https://app.notion.com/p/37beca73144481e2b712f3a434a72d0f"},
+        {name:"The Quest Log", url:"https://app.notion.com/p/037ea03a9d30475aa1a3593fa00fe6d5"},
+        {name:"Bounties (Dock)", url:"https://app.notion.com/p/384eca7314448172ad58c92191e9a996"},
+        {name:"The Arrangement (Music)", url:"https://app.notion.com/p/384eca73144481019303d3ab43a07089"},
+        {name:"The Shot List (Lens)", url:"https://app.notion.com/p/384eca7314448103ad6adb3e4aef4c8c"},
+        {name:"Building the Forge (Lab)", url:"https://app.notion.com/p/384eca73144481b18cdccc81abb7744e"},
+        {name:"The Rounds (Realm)", url:"https://app.notion.com/p/384eca73144481578c5fdd44a8f3ec3d"},
+        {name:"The Drawing Room (Map)", url:"https://app.notion.com/p/384eca73144481e2aadcec70a2bf46ac"},
+        {name:"The Faculty", url:"https://app.notion.com/p/37ceca73144481c09826c2d160772be3"},
+        {name:"NotebookLM", url:"https://notebooklm.google.com"},
+        {name:"Fireflies", url:"https://app.fireflies.ai"},
+        {name:"Fathom", url:"https://fathom.video"}
+      ],
+      foot: "the inventory opens; the collections layer grows from here."
     }
   }
 };
@@ -1581,6 +1722,61 @@ var DATA = {
     root.appendChild(h("p",{class:"armory-line"}, d.armory.doctrine));
   }
 
+  /* ---------------- Tab 8 . Library ---------------- */
+  function renderLibrary(root){
+    var d = DATA.library;
+
+    root.appendChild(sect("The Faculty Shelves","seven chairs, doctrine on the boards"));
+    root.appendChild(h("div",{class:"lib-grid"}, d.faculty.map(function(f){
+      return h("div",{class:"shelf"},
+        h("p",{class:"f-head"},
+          h("span",{class:"f-name"}, f.name),
+          h("span",{class:"f-epi"}, f.epi),
+          f.status ? h("span",{class:"f-status"+(f.pending?" pending":"")}, f.status) : null
+        ),
+        h("p",{class:"f-cards"}, h("b",null,"Cards"), f.cards.join(" . ")),
+        h("p",{class:"f-quote"}, f.quote),
+        f.note ? h("p",{class:"f-note"}, f.note) : null,
+        f.sign ? h("p",{class:"f-sign"}, f.sign) : null
+      );
+    })));
+
+    root.appendChild(sect("The Lexicon","nine terms"));
+    root.appendChild(h("div",{class:"lex-grid"}, d.lexicon.map(function(x){
+      return h("p",{class:"lex"}, h("b",null,x.t), " . ", h("span",null,x.d));
+    })));
+
+    root.appendChild(sect("The Three Lineages"));
+    root.appendChild(h("div",{class:"lin-grid"}, d.lineages.map(function(l){
+      return h("div",{class:"shelf"},
+        h("p",{class:"f-head"}, h("span",{class:"f-name"}, l.name), h("span",{class:"f-epi"}, l.epi)),
+        h("p",{class:"f-cards"}, l.d),
+        l.q ? h("p",{class:"f-quote"}, l.q) : null
+      );
+    })));
+    root.appendChild(h("div",{class:"lin-foot"},
+      h("p",{class:"teddy"}, d.teddy),
+      h("p",{class:"register"}, d.register)
+    ));
+
+    root.appendChild(sect("The Five Truths", d.truths.note));
+    root.appendChild(h("div",{class:"truths"}, d.truths.list.map(function(t){
+      return h("div",{class:"truth"}, t);
+    })));
+
+    root.appendChild(sect("Loop Returns", d.loopReturns.mark));
+    root.appendChild(h("div",{class:"loops"}, d.loopReturns.items.map(function(it){
+      return h("p",{class:"loopline"}, dia("dim"),
+        h("span",null, h("b",null,it.name), " . "+it.line));
+    })));
+
+    root.appendChild(sect("Links of the Maze","open in new tabs"));
+    root.appendChild(h("div",{class:"links"}, d.links.items.map(function(l){
+      return h("a",{class:"mlink",href:l.url,target:"_blank",rel:"noopener"}, dia("dim"), l.name);
+    })));
+    root.appendChild(h("p",{class:"links-foot"}, d.links.foot));
+  }
+
   /* ---------------- mount + tabs ---------------- */
   var mounts = {
     "panel-odyssey": renderOdyssey,
@@ -1589,7 +1785,8 @@ var DATA = {
     "panel-cohort": renderCohort,
     "panel-crew": renderCrew,
     "panel-cultists": renderCultists,
-    "panel-loadouts": renderLoadouts
+    "panel-loadouts": renderLoadouts,
+    "panel-library": renderLibrary
   };
   for (var id in mounts) mounts[id](document.getElementById(id));
 
@@ -1600,7 +1797,8 @@ var DATA = {
     "tab-cohort":"tint-cohort",
     "tab-crew":"tint-crew",
     "tab-cultists":"tint-cultists",
-    "tab-loadouts":"tint-loadouts"
+    "tab-loadouts":"tint-loadouts",
+    "tab-library":"tint-library"
   };
   var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
   var panels = tabs.map(function(t){ return document.getElementById(t.getAttribute("aria-controls")); });
